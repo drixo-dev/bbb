@@ -1,11 +1,14 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Sparkles, Calendar, MapPin, ChevronDown } from 'lucide-react';
+import { Sparkles, Calendar, MapPin, ChevronDown, RefreshCw } from 'lucide-react';
+import ResumeRegistrationModal from './ResumeRegistrationModal';
 
 export default function Hero() {
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center pt-24 pb-16 px-4 overflow-hidden royal-damask-bg">
       {/* Soft Ambient Radial Lighting */}
@@ -110,14 +113,18 @@ export default function Hero() {
             >
               Explore Passes
             </Link>
+          </div>
 
-            <Link
-              href="#gallery"
-              className="w-full sm:w-auto px-6 py-4 rounded-full bg-maroon-900/80 hover:bg-gold-antique hover:text-maroon-900 text-gold-champagne font-marcellus font-semibold text-base tracking-widest uppercase border border-gold-antique/50 transition-all duration-300 flex items-center justify-center gap-2"
+          {/* Resume Registration Link */}
+          <div className="mt-8 pt-6 border-t border-gold-antique/20">
+            <p className="font-poppins text-xs text-royal-ivory/60 mb-2">Already Registered?</p>
+            <button 
+              onClick={() => setIsResumeModalOpen(true)}
+              className="font-marcellus text-sm font-bold text-gold-champagne hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto"
             >
-              <span>Explore Gallery</span>
-              <span>🖼️</span>
-            </Link>
+              <RefreshCw className="w-4 h-4" />
+              Resume Registration / View Pass
+            </button>
           </div>
         </motion.div>
 
@@ -128,6 +135,11 @@ export default function Hero() {
           </Link>
         </div>
       </div>
+
+      <ResumeRegistrationModal 
+        isOpen={isResumeModalOpen} 
+        onClose={() => setIsResumeModalOpen(false)} 
+      />
     </section>
   );
 }

@@ -17,13 +17,6 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded screenshots statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database Connection
-connectDB();
-
-// API Routes
-app.use('/api', apiRoutes);
-app.use('/api/admin', adminRoutes);
-
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', event: 'Band Baaja Baarat 2026', time: new Date() });
@@ -36,9 +29,19 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`\n==================================================`);
-  console.log(`👑 Band Baaja Baarat 2026 Backend Server Started`);
-  console.log(`🚀 Running on: http://localhost:${PORT}`);
-  console.log(`==================================================\n`);
+// Connect to MongoDB before starting Express
+connectDB().then(() => {
+  // API Routes
+  app.use('/api', apiRoutes);
+  app.use('/api/admin', adminRoutes);
+
+  app.listen(PORT, () => {
+    console.log(`\n==================================================`);
+    console.log(`👑 Band Baaja Baarat 2026 Backend Server Started`);
+    console.log(`🚀 Running on: http://localhost:${PORT}`);
+    console.log(`==================================================\n`);
+  });
+}).catch(err => {
+  console.error("Failed to connect to DB, server not started", err);
+  process.exit(1);
 });

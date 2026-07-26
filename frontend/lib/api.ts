@@ -28,7 +28,7 @@ export interface Participant {
   transactionId?: string;
   screenshotUrl?: string;
   driveScreenshotUrl?: string;
-  paymentStatus: 'Pending' | 'Approved' | 'Rejected';
+  paymentStatus: 'Not Submitted' | 'Pending' | 'Approved' | 'Rejected';
   registrationStatus: 'Submitted' | 'Verified' | 'Cancelled';
   checkedIn: boolean;
   checkedInAt?: string;
@@ -39,6 +39,24 @@ export interface Participant {
 export async function apiRegister(payload: RegisterPayload) {
   const res = await fetch(`${API_BASE_URL}/register`, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}
+
+export async function apiResumeRegistration(payload: { rollNumber: string; email: string }) {
+  const res = await fetch(`${API_BASE_URL}/resume-registration`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}
+
+export async function apiEditRegistration(registrationId: string, payload: Partial<RegisterPayload>) {
+  const res = await fetch(`${API_BASE_URL}/registration/${registrationId}`, {
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });

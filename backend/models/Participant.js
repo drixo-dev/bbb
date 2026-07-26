@@ -8,7 +8,7 @@ const memberSchema = new mongoose.Schema({
 const participantSchema = new mongoose.Schema({
   registrationId: { type: String, required: true, unique: true, index: true },
   name: { type: String, required: true },
-  rollNumber: { type: String, required: true },
+  rollNumber: { type: String, required: true, index: true },
   email: { type: String, default: '' },
   phone: { type: String, required: true },
   school: { type: String, required: true },
@@ -18,7 +18,7 @@ const participantSchema = new mongoose.Schema({
   transactionId: { type: String, default: '' },
   screenshotUrl: { type: String, default: '' },
   driveScreenshotUrl: { type: String, default: '' },
-  paymentStatus: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+  paymentStatus: { type: String, enum: ['Not Submitted', 'Pending', 'Approved', 'Rejected'], default: 'Not Submitted' },
   registrationStatus: { type: String, enum: ['Submitted', 'Verified', 'Cancelled'], default: 'Submitted' },
   checkedIn: { type: Boolean, default: false },
   checkedInAt: { type: Date, default: null }

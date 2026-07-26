@@ -1,9 +1,9 @@
-const storage = require('../utils/storage');
+const Participant = require('../models/Participant');
 
 const getPassById = async (req, res) => {
   try {
     const { id } = req.params;
-    const participant = storage.findParticipantById(id);
+    const participant = await Participant.findOne({ registrationId: id });
 
     if (!participant) {
       return res.status(404).json({ success: false, message: 'Pass / Registration record not found.' });

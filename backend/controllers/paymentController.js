@@ -1,4 +1,4 @@
-const storage = require('../utils/storage');
+const Participant = require('../models/Participant');
 const googleService = require('../services/googleService');
 const emailService = require('../services/emailService');
 const whatsappService = require('../services/whatsappService');
@@ -12,9 +12,13 @@ const submitPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Registration ID and Transaction ID (UTR) are required.' });
     }
 
-    const participant = storage.findParticipantById(registrationId);
+    const participant = await Participant.findOne({ registrationId });
     if (!participant) {
       return res.status(404).json({ success: false, message: 'Registration record not found.' });
+    }
+
+    if (participant.paymentStatus === 'Pending' || participant.paymentStatus === 'Approved') {
+      return res.status(400).json({ success: false, message: `Payment already submitted. Current status: ${participant.paymentStatus}` });
     }
 
     let localScreenshotUrl = participant.screenshotUrl;
@@ -30,13 +34,13 @@ const submitPayment = async (req, res) => {
       }
     }
 
-    const updatedParticipant = storage.updateParticipant(registrationId, {
-      transactionId: transactionId.trim(),
-      screenshotUrl: localScreenshotUrl,
-      driveScreenshotUrl: driveUrl || '',   // only set if it's a real Google Drive URL
-      paymentStatus: 'Pending',
-      registrationStatus: 'Submitted'
-    });
+    participant.transactionId = transactionId.trim();
+    participant.screenshotUrl = localScreenshotUrl;
+    participant.driveScreenshotUrl = driveUrl || '';
+    participant.paymentStatus = 'Pending';
+    participant.registrationStatus = 'Submitted';
+
+    const updatedParticipant = await participant.save();
 
     // Async sync to Google Sheets
     googleService.appendToSheet(updatedParticipant).catch(err => console.error('Sheet sync background error:', err));

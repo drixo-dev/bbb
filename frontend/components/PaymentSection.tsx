@@ -199,80 +199,118 @@ export default function PaymentSection() {
             </div>
           </div>
 
-          {/* Right Column: UTR & Screenshot Upload Form */}
+          {/* Right Column: UTR & Screenshot Upload Form or Status */}
           <div>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="p-5 rounded-2xl bg-maroon-900/60 border border-gold-antique/30 space-y-4">
-                <h3 className="font-marcellus text-sm font-bold text-gold-bright flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  Submit Payment Verification Details
+            {participant.paymentStatus === 'Pending' || participant.paymentStatus === 'Approved' ? (
+              <div className="p-8 rounded-2xl bg-maroon-900/60 border border-gold-antique/30 text-center space-y-4">
+                <ShieldCheck className="w-12 h-12 text-emerald-400 mx-auto" />
+                <h3 className="font-marcellus text-xl font-bold text-gold-bright">
+                  Payment Submitted
                 </h3>
-
-                <div>
-                  <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
-                    UPI Transaction ID / UTR Number * (12 Digits)
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 429810982312"
-                    value={transactionId}
-                    onChange={(e) => setTransactionId(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-maroon-950 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm tracking-wider font-mono"
-                  />
-                  <p className="font-poppins text-[10px] text-gold-champagne/70 mt-1">
-                    Found in your GPay / PhonePe / Paytm payment status details
+                <p className="font-poppins text-sm text-royal-ivory/80">
+                  Current Status: <strong className="text-gold-champagne">{participant.paymentStatus}</strong>
+                </p>
+                {participant.paymentStatus === 'Pending' && (
+                  <p className="font-poppins text-xs text-royal-ivory/60 mt-2">
+                    Your payment is currently being verified by our team. Please check back later.
                   </p>
-                </div>
+                )}
+                {participant.paymentStatus === 'Approved' && (
+                  <button
+                    onClick={() => router.push(`/success?regId=${regId}`)}
+                    className="mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-bold tracking-widest text-sm"
+                  >
+                    View E-Pass
+                  </button>
+                )}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="p-5 rounded-2xl bg-maroon-900/60 border border-gold-antique/30 space-y-4">
+                  <h3 className="font-marcellus text-sm font-bold text-gold-bright flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    Submit Payment Verification Details
+                  </h3>
 
-                <div>
-                  <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
-                    Upload Payment Screenshot *
-                  </label>
-                  <div className="relative border-2 border-dashed border-gold-antique/40 rounded-2xl p-4 text-center bg-maroon-950/60 hover:border-gold-champagne transition-colors cursor-pointer group">
+                  <div>
+                    <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
+                      UPI Transaction ID / UTR Number * (12 Digits)
+                    </label>
                     <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                      type="text"
+                      required
+                      placeholder="e.g. 429810982312"
+                      value={transactionId}
+                      onChange={(e) => setTransactionId(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm tracking-wider font-mono"
                     />
-                    {previewUrl ? (
-                      <div className="space-y-2">
-                        <img src={previewUrl} alt="Screenshot preview" className="max-h-32 mx-auto rounded-lg border border-gold-antique shadow-md" />
-                        <p className="font-poppins text-xs text-emerald-400 flex items-center justify-center gap-1">
-                          <CheckCircle2 className="w-4 h-4" /> Screenshot attached! Click to change.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2 py-3">
-                        <Upload className="w-8 h-8 text-gold-champagne mx-auto group-hover:scale-110 transition-transform" />
-                        <p className="font-marcellus text-xs text-gold-champagne">
-                          Click or Drag to Upload Payment Screenshot
-                        </p>
-                        <p className="font-poppins text-[10px] text-royal-ivory/50">
-                          Supports JPG, PNG, WebP up to 10MB
-                        </p>
-                      </div>
-                    )}
+                    <p className="font-poppins text-[10px] text-gold-champagne/70 mt-1">
+                      Found in your GPay / PhonePe / Paytm payment status details
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
+                      Upload Payment Screenshot *
+                    </label>
+                    <div className="relative border-2 border-dashed border-gold-antique/40 rounded-2xl p-4 text-center bg-maroon-950/60 hover:border-gold-champagne transition-colors cursor-pointer group">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                      />
+                      {previewUrl ? (
+                        <div className="space-y-2">
+                          <img src={previewUrl} alt="Screenshot preview" className="max-h-32 mx-auto rounded-lg border border-gold-antique shadow-md" />
+                          <p className="font-poppins text-xs text-emerald-400 flex items-center justify-center gap-1">
+                            <CheckCircle2 className="w-4 h-4" /> Screenshot attached! Click to change.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 py-3">
+                          <Upload className="w-8 h-8 text-gold-champagne mx-auto group-hover:scale-110 transition-transform" />
+                          <p className="font-marcellus text-xs text-gold-champagne">
+                            Click or Drag to Upload Payment Screenshot
+                          </p>
+                          <p className="font-poppins text-[10px] text-royal-ivory/50">
+                            Supports JPG, PNG, WebP up to 10MB
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 font-marcellus font-bold text-base tracking-widest uppercase shadow-gold-intense hover:scale-[1.02] transition-all duration-300 border border-gold-champagne flex items-center justify-center gap-2"
-              >
-                {submitting ? (
-                  <span>Saving Payment Details...</span>
-                ) : (
-                  <>
-                    <span>Confirm & Finish Registration</span>
-                    <ArrowRight className="w-5 h-5" />
-                  </>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-4 rounded-full bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 font-marcellus font-bold text-base tracking-widest uppercase shadow-gold-intense hover:scale-[1.02] transition-all duration-300 border border-gold-champagne flex items-center justify-center gap-2"
+                >
+                  {submitting ? (
+                    <span>Saving Payment Details...</span>
+                  ) : (
+                    <>
+                      <span>Confirm & Finish Registration</span>
+                      <ArrowRight className="w-5 h-5" />
+                    </>
+                  )}
+                </button>
+                
+                {participant.paymentStatus === 'Not Submitted' && (
+                  <div className="text-center mt-4">
+                    <p className="text-xs text-royal-ivory/60 font-poppins mb-2">Need to change something?</p>
+                    <button 
+                      type="button"
+                      onClick={() => router.push(`/register?edit=${regId}`)}
+                      className="text-sm text-gold-champagne hover:text-white underline font-marcellus transition-colors"
+                    >
+                      Edit Registration
+                    </button>
+                  </div>
                 )}
-              </button>
-            </form>
+              </form>
+            )}
           </div>
         </div>
       )}

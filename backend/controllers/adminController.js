@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const storage = require('../utils/storage');
+const Participant = require('../models/Participant');
 const emailService = require('../services/emailService');
 
 const adminLogin = async (req, res) => {
@@ -31,7 +31,7 @@ const adminLogin = async (req, res) => {
 
 const getDashboardStats = async (req, res) => {
   try {
-    const participants = storage.getAllParticipants();
+    const participants = await Participant.find();
     
     const totalRegistrations = participants.length;
     const pendingPayments = participants.filter(p => p.paymentStatus === 'Pending').length;
@@ -62,27 +62,29 @@ const getDashboardStats = async (req, res) => {
 
 const getParticipants = async (req, res) => {
   try {
-    let participants = storage.getAllParticipants();
     const { search, passType, paymentStatus } = req.query;
-
+    
+    let query = {};
     if (search) {
-      const q = search.toLowerCase();
-      participants = participants.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.email.toLowerCase().includes(q) ||
-        p.rollNumber.toLowerCase().includes(q) ||
-        p.registrationId.toLowerCase().includes(q) ||
-        (p.transactionId && p.transactionId.toLowerCase().includes(q))
-      );
+      const q = new RegExp(search, 'i');
+      query.$or = [
+        { name: q },
+        { email: q },
+        { rollNumber: q },
+        { registrationId: q },
+        { transactionId: q }
+      ];
     }
-
+    
     if (passType && passType !== 'All') {
-      participants = participants.filter(p => p.passType === passType);
+      query.passType = passType;
     }
 
     if (paymentStatus && paymentStatus !== 'All') {
-      participants = participants.filter(p => p.paymentStatus === paymentStatus);
+      query.paymentStatus = paymentStatus;
     }
+
+    const participants = await Participant.find(query).sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -102,10 +104,14 @@ const updateStatus = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid payload.' });
     }
 
-    const updated = storage.updateParticipant(registrationId, {
-      paymentStatus,
-      registrationStatus: paymentStatus === 'Approved' ? 'Verified' : 'Submitted'
-    });
+    const updated = await Participant.findOneAndUpdate(
+      { registrationId },
+      { 
+        paymentStatus,
+        registrationStatus: paymentStatus === 'Approved' ? 'Verified' : 'Submitted'
+      },
+      { new: true }
+    );
 
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Participant not found.' });
@@ -130,7 +136,12 @@ const editParticipant = async (req, res) => {
     const { registrationId } = req.params;
     const updates = req.body;
 
-    const updated = storage.updateParticipant(registrationId, updates);
+    const updated = await Participant.findOneAndUpdate(
+      { registrationId },
+      updates,
+      { new: true }
+    );
+    
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Participant not found.' });
     }
@@ -148,7 +159,7 @@ const editParticipant = async (req, res) => {
 const deleteParticipant = async (req, res) => {
   try {
     const { registrationId } = req.params;
-    const deleted = storage.deleteParticipant(registrationId);
+    const deleted = await Participant.findOneAndDelete({ registrationId });
 
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'Participant not found.' });
@@ -165,7 +176,7 @@ const deleteParticipant = async (req, res) => {
 
 const exportCSV = async (req, res) => {
   try {
-    const participants = storage.getAllParticipants();
+    const participants = await Participant.find();
     
     let csv = 'Registration ID,Name,Roll Number,Email,Phone,School,Pass Type,Amount,Payment Status,Transaction ID,Checked In,Registration Time,Members\n';
 
@@ -189,7 +200,7 @@ const verifyPassQR = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Registration ID required for scanning.' });
     }
 
-    const participant = storage.findParticipantById(registrationId);
+    const participant = await Participant.findOne({ registrationId });
     if (!participant) {
       return res.status(404).json({ success: false, valid: false, message: 'INVALID PASS: Registration ID not found in database.' });
     }
@@ -213,10 +224,9 @@ const verifyPassQR = async (req, res) => {
     }
 
     // Mark as checked in
-    const updated = storage.updateParticipant(registrationId, {
-      checkedIn: true,
-      checkedInAt: new Date().toISOString()
-    });
+    participant.checkedIn = true;
+    participant.checkedInAt = new Date();
+    const updated = await participant.save();
 
     return res.status(200).json({
       success: true,

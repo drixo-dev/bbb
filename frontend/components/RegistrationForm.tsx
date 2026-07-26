@@ -10,11 +10,14 @@ export default function RegistrationForm() {
   const searchParams = useSearchParams();
   
   const initialPass = searchParams?.get('pass') || 'Single Pass';
+  const editRegId = searchParams?.get('edit');
+  const [isEditMode, setIsEditMode] = useState(!!editRegId);
 
   const [passType, setPassType] = useState<string>(initialPass);
   const [formData, setFormData] = useState({
     name: '',
     rollNumber: '',
+    email: '',
     phone: '',
     school: 'SOT',
   });
@@ -34,6 +37,33 @@ export default function RegistrationForm() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (editRegId) {
+      import('@/lib/api').then(({ apiGetPass }) => {
+        apiGetPass(editRegId).then((res) => {
+          if (res.success && res.participant) {
+            const p = res.participant;
+            setFormData({
+              name: p.name,
+              rollNumber: p.rollNumber,
+              email: p.email,
+              phone: p.phone,
+              school: p.school
+            });
+            setPassType(p.passType);
+            
+            const fetchedMembers = p.members || [];
+            const newMembers = [...fetchedMembers];
+            while (newMembers.length < 3) {
+              newMembers.push({ name: '', rollNumber: '' });
+            }
+            setMembers(newMembers);
+          }
+        });
+      });
+    }
+  }, [editRegId]);
+
   const requiredExtraMembers = passType === 'Couple Pass' ? 1 : passType === 'Group Pass (4 People)' ? 3 : 0;
 
   const handleMemberChange = (index: number, field: keyof Member, value: string) => {
@@ -47,8 +77,14 @@ export default function RegistrationForm() {
     setErrorMessage('');
 
     // Validation
-    if (!formData.name.trim() || !formData.rollNumber.trim() || !formData.phone.trim()) {
+    if (!formData.name.trim() || !formData.rollNumber.trim() || !formData.email.trim() || !formData.phone.trim()) {
       setErrorMessage('Please fill in all required lead participant details.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setErrorMessage('Please enter a valid email address.');
       return;
     }
 
@@ -71,15 +107,31 @@ export default function RegistrationForm() {
     try {
       const activeMembers = members.slice(0, requiredExtraMembers);
       
-      const response = await apiRegister({
-        ...formData,
-        email: '',
-        passType: passType as 'Single Pass' | 'Couple Pass' | 'Group Pass (4 People)',
-        members: activeMembers
-      });
+      let response;
+      if (isEditMode && editRegId) {
+        const { apiEditRegistration } = await import('@/lib/api');
+        response = await apiEditRegistration(editRegId, {
+          ...formData,
+          passType: passType as 'Single Pass' | 'Couple Pass' | 'Group Pass (4 People)',
+          members: activeMembers
+        });
+      } else {
+        response = await apiRegister({
+          ...formData,
+          passType: passType as 'Single Pass' | 'Couple Pass' | 'Group Pass (4 People)',
+          members: activeMembers
+        });
+      }
 
-      if (response.success && response.data?.registrationId) {
-        router.push(`/payment?regId=${response.data.registrationId}`);
+      if (response.success) {
+        const regId = response.registrationId || response.data?.registrationId;
+        if (isEditMode) {
+          router.push(`/payment?regId=${editRegId}`);
+        } else if (response.nextAction === 'VIEW_PASS') {
+          router.push(`/success?regId=${regId}`);
+        } else {
+          router.push(`/payment?regId=${regId}`);
+        }
       } else {
         setErrorMessage(response.message || 'Registration failed. Please try again.');
       }
@@ -100,7 +152,7 @@ export default function RegistrationForm() {
       <div className="text-center mb-8">
         <Crown className="w-10 h-10 text-gold-champagne mx-auto mb-2 animate-float" />
         <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-gold-gradient mb-1">
-          BAARATI REGISTRATION
+          {isEditMode ? 'EDIT REGISTRATION' : 'BAARATI REGISTRATION'}
         </h2>
         <p className="font-poppins text-xs sm:text-sm text-gold-warm">
           Fill in your details below to reserve your official event pass
@@ -173,10 +225,11 @@ export default function RegistrationForm() {
               <input
                 type="text"
                 required
+                disabled={isEditMode}
                 placeholder="e.g. 21BCE1042"
                 value={formData.rollNumber}
                 onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm uppercase"
+                className={`w-full px-4 py-3 rounded-xl border border-gold-antique/40 text-royal-ivory font-poppins text-sm uppercase focus:outline-none ${isEditMode ? 'bg-maroon-950/80 text-royal-ivory/50 cursor-not-allowed' : 'bg-maroon-900/90 focus:border-gold-champagne focus:ring-1 focus:ring-gold-champagne placeholder-royal-ivory/40'}`}
               />
             </div>
           </div>
@@ -196,6 +249,22 @@ export default function RegistrationForm() {
               />
             </div>
 
+            <div>
+              <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                required
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
                 School *
@@ -238,7 +307,7 @@ export default function RegistrationForm() {
                       placeholder={`Name of Member ${idx + 2}`}
                       value={members[idx].name}
                       onChange={(e) => handleMemberChange(idx, 'name', e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-maroon-950 border border-gold-antique/30 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-xs"
+                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
                     />
                   </div>
 
@@ -252,7 +321,7 @@ export default function RegistrationForm() {
                       placeholder={`Roll No of Member ${idx + 2}`}
                       value={members[idx].rollNumber}
                       onChange={(e) => handleMemberChange(idx, 'rollNumber', e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-maroon-950 border border-gold-antique/30 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-xs uppercase"
+                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm uppercase"
                     />
                   </div>
                 </div>
@@ -271,7 +340,7 @@ export default function RegistrationForm() {
             <span>Processing Registration...</span>
           ) : (
             <>
-              <span>Proceed to Payment Screen</span>
+              <span>{isEditMode ? 'Save Changes' : 'Proceed to Payment Screen'}</span>
               <ArrowRight className="w-5 h-5" />
             </>
           )}

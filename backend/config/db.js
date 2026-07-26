@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   if (!process.env.MONGODB_URI) {
-    console.log('ℹ️ MONGODB_URI not defined. Application using JSON storage & Google Sheets database.');
-    return false;
+    console.error('❌ MONGODB_URI is not defined in .env file.');
+    process.exit(1);
   }
 
   try {
@@ -11,8 +11,8 @@ const connectDB = async () => {
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     return true;
   } catch (error) {
-    console.warn(`⚠️ MongoDB Connection Error: ${error.message}. Falling back to local/Google Sheets storage.`);
-    return false;
+    console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    process.exit(1);
   }
 };
 
