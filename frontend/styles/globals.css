@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Marcellus&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --maroon-deep: #3B0811;
+  --maroon-dark: #4A0B17;
+  --maroon-velvet: #5D0F1D;
+  --maroon-burgundy: #6E1529;
+  --gold-antique: #D4AF37;
+  --gold-champagne: #E8C96B;
+  --ivory: #F8F3EB;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--maroon-deep);
+  color: var(--ivory);
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Custom Damask Overlay Texture */
+.royal-damask-bg {
+  background-color: #5D0F1D;
+  background-image: radial-gradient(#6E1529 1.5px, transparent 1.5px), radial-gradient(#3B0811 1.5px, #5D0F1D 1.5px);
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
+}
+
+/* Gold Gradient Text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFF5E6 0%, #E8C96B 30%, #D4AF37 70%, #AA820A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gold-bright {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F3E5AB 40%, #E8C96B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Metallic Gold Border Style */
+.border-gold-royal {
+  border: 2px solid transparent;
+  border-image: linear-gradient(135deg, #D4AF37, #FFF5E6, #D4AF37, #8B6508) 1;
+}
+
+.box-gold-frame {
+  position: relative;
+  border: 2px solid #D4AF37;
+  background: linear-gradient(180deg, rgba(110, 21, 41, 0.9) 0%, rgba(61, 9, 21, 0.95) 100%);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.box-gold-frame::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px dashed rgba(212, 175, 55, 0.4);
+  pointer-events: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #3B0811;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D4AF37, #6E1529);
+  border-radius: 5px;
+  border: 2px solid #3B0811;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E8C96B;
+}
+
+/* Ornate Corner Accents */
+.corner-ornament {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: #D4AF37;
+  pointer-events: none;
+}
+.corner-tl { top: 6px; left: 6px; border-top: 2px solid #D4AF37; border-left: 2px solid #D4AF37; }
+.corner-tr { top: 6px; right: 6px; border-top: 2px solid #D4AF37; border-right: 2px solid #D4AF37; }
+.corner-bl { bottom: 6px; left: 6px; border-bottom: 2px solid #D4AF37; border-left: 2px solid #D4AF37; }
+.corner-br { bottom: 6px; right: 6px; border-bottom: 2px solid #D4AF37; border-right: 2px solid #D4AF37; }
