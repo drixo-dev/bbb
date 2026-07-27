@@ -35,13 +35,7 @@ const submitPayment = async (req, res) => {
     let driveUrl = participant.driveScreenshotUrl;
 
     if (req.file) {
-      localScreenshotUrl = `/uploads/${req.file.filename}`;
-      const fullPath = req.file.path;
-      // Try uploading to Google Drive
-      const uploadedDriveUrl = await googleService.uploadToDrive(fullPath, req.file.filename);
-      if (uploadedDriveUrl) {
-        driveUrl = uploadedDriveUrl;
-      }
+      localScreenshotUrl = req.file.path; // Cloudinary URL
     }
 
     participant.transactionId = cleanTransactionId;
