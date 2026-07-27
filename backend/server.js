@@ -11,9 +11,15 @@ const volunteerRoutes = require('./routes/volunteer');
 const app = express();
 
 // Middleware
+const frontendUrl = process.env.FRONTEND_URL || '';
+const altFrontendUrl = frontendUrl.includes('www.') 
+  ? frontendUrl.replace('www.', '') 
+  : frontendUrl.replace('https://', 'https://www.');
+
 app.use(cors({
   origin: [
-    process.env.FRONTEND_URL,
+    frontendUrl,
+    altFrontendUrl,
     'http://localhost:3000'
   ],
   credentials: true
