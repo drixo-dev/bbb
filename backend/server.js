@@ -46,6 +46,18 @@ connectDB().then(async () => {
   app.use('/api/admin', adminRoutes);
   app.use('/api/volunteer', volunteerRoutes);
 
+  // Global Error Handler
+  app.use((err, req, res, next) => {
+    console.error('Unhandled Server Error:', err);
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ success: false, message: 'File is too large. Maximum size is 10MB.' });
+    }
+    if (err.message && err.message.includes('file type')) {
+      return res.status(400).json({ success: false, message: 'Invalid file type. Only JPG, PNG, and WEBP are allowed.' });
+    }
+    res.status(500).json({ success: false, message: 'An unexpected server error occurred.' });
+  });
+
   app.listen(PORT, () => {
     console.log(`\n==================================================`);
     console.log(`👑 Band Baaja Baarat 2026 Backend Server Started`);
