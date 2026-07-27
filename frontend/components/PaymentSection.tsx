@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Crown, QrCode, Upload, CheckCircle2, ShieldCheck, Copy, ArrowRight } from 'lucide-react';
 import { apiGetPass, apiSubmitPayment, Participant } from '@/lib/api';
+import { compressImage } from '@/lib/imageCompression';
 
 export default function PaymentSection() {
   const router = useRouter();
@@ -72,7 +73,9 @@ export default function PaymentSection() {
       formData.append('registrationId', regId || '');
       formData.append('transactionId', transactionId);
       if (file) {
-        formData.append('screenshot', file);
+        setErrorMessage('Compressing image...');
+        const compressedFile = await compressImage(file);
+        formData.append('screenshot', compressedFile);
       }
 
       const response = await apiSubmitPayment(formData);
