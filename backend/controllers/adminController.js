@@ -12,14 +12,14 @@ const adminLogin = async (req, res) => {
     
     // Seed default admin if missing
     if (!admin) {
-      const defaultUsername = process.env.ADMIN_USERNAME || 'admin';
-      const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123';
+      const defaultUsername = process.env.ADMIN_USERNAME || 'recovery_admin';
+      const defaultPassword = process.env.ADMIN_PASSWORD || 'bbb2026_RecoveryKey!';
       
-      if (username === defaultUsername && (password === defaultPassword || password === 'admin123')) {
+      if (username === defaultUsername && password === defaultPassword) {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(defaultPassword, salt);
         admin = await Admin.create({
-          name: 'Super Admin',
+          name: 'System Recovery Admin',
           email: defaultUsername.toLowerCase(),
           password: hashedPassword,
           role: 'super_admin'
