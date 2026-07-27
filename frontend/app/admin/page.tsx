@@ -104,7 +104,7 @@ export default function AdminPage() {
         setToken(res.token);
         setIsAuthenticated(true);
       } else {
-        setLoginError(res.message || 'Invalid credentials. Default: admin / admin123');
+        setLoginError(res.message || 'Invalid credentials.');
       }
     } catch {
       setLoginError('Cannot connect to backend server. Ensure it is running on port 5000.');
@@ -221,10 +221,7 @@ export default function AdminPage() {
               {loggingIn ? 'Authenticating...' : 'Access Royal Dashboard'}
             </button>
           </form>
-          <p className="mt-4 font-poppins text-[10px] text-gold-antique/50">
-            Default credentials: admin / admin123
-          </p>
-          <Link href="/" className="mt-3 block font-poppins text-xs text-gold-champagne/60 hover:text-gold-champagne">
+          <Link href="/" className="mt-5 block font-poppins text-xs text-gold-champagne/60 hover:text-gold-champagne">
             ← Back to Website
           </Link>
         </div>
