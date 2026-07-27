@@ -102,7 +102,13 @@ export default function AdminPage() {
   };
 
   const handleStatusChange = async (registrationId: string, status: string) => {
-    const res = await apiAdminUpdateStatus(token, registrationId, status);
+    let rejectionReason = undefined;
+    if (status === 'Rejected') {
+      const reason = prompt('Please enter a reason for rejecting this payment:');
+      if (reason === null) return; // cancelled
+      rejectionReason = reason;
+    }
+    const res = await apiAdminUpdateStatus(token, registrationId, status, rejectionReason);
     if (res.success) fetchData();
   };
 
@@ -149,7 +155,7 @@ export default function AdminPage() {
               placeholder="Admin Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-maroon-900 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm"
+              className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm"
             />
             <input
               type="password"
@@ -157,7 +163,7 @@ export default function AdminPage() {
               placeholder="Admin Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-maroon-900 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm"
+              className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm"
             />
             <button
               type="submit"
@@ -261,7 +267,7 @@ export default function AdminPage() {
                   value={scanResult}
                   onChange={(e) => setScanResult(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleQRVerify()}
-                  className="flex-1 px-4 py-3 rounded-xl bg-maroon-950 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm font-mono"
+                  className="flex-1 px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm font-mono"
                 />
                 <button
                   onClick={handleQRVerify}
@@ -295,14 +301,14 @@ export default function AdminPage() {
                 placeholder="Search name, email, roll no, reg ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-maroon-950 border border-gold-antique/30 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-xs"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-maroon-900/60 border border-gold-antique/30 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-xs"
               />
             </div>
             <div className="flex gap-2">
               <select
                 value={filterPass}
                 onChange={(e) => setFilterPass(e.target.value)}
-                className="px-3 py-2.5 rounded-xl bg-maroon-950 border border-gold-antique/30 text-royal-ivory focus:border-gold-champagne focus:outline-none font-poppins text-xs"
+                className="px-3 py-2.5 rounded-xl bg-maroon-900/60 border border-gold-antique/30 text-royal-ivory focus:border-gold-champagne focus:outline-none font-poppins text-xs"
               >
                 <option value="All">All Passes</option>
                 <option value="Single Pass">Single</option>
@@ -312,10 +318,10 @@ export default function AdminPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2.5 rounded-xl bg-maroon-950 border border-gold-antique/30 text-royal-ivory focus:border-gold-champagne focus:outline-none font-poppins text-xs"
+                className="px-3 py-2.5 rounded-xl bg-maroon-900/60 border border-gold-antique/30 text-royal-ivory focus:border-gold-champagne focus:outline-none font-poppins text-xs"
               >
                 <option value="All">All Status</option>
-                <option value="Pending">Pending</option>
+                <option value="Pending Verification">Pending</option>
                 <option value="Approved">Approved</option>
                 <option value="Rejected">Rejected</option>
               </select>
@@ -345,12 +351,11 @@ export default function AdminPage() {
                 <thead>
                   <tr className="border-b border-gold-antique/20 text-gold-antique uppercase tracking-wider text-[10px]">
                     <th className="px-4 py-3 text-left">Reg ID</th>
-                    <th className="px-4 py-3 text-left">Name & Roll</th>
+                    <th className="px-4 py-3 text-left">Identity</th>
                     <th className="px-4 py-3 text-left">Pass & School</th>
                     <th className="px-4 py-3 text-left">Reg Time</th>
                     <th className="px-4 py-3 text-left">Amount</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Screenshot</th>
+                    <th className="px-4 py-3 text-left">Payment Details</th>
                     <th className="px-4 py-3 text-left">Actions</th>
                   </tr>
                 </thead>
@@ -365,6 +370,8 @@ export default function AdminPage() {
                         <div>
                           <p className="text-royal-ivory font-semibold">{p.name}</p>
                           <p className="text-gold-antique/70 text-[10px]">{p.rollNumber}</p>
+                          <p className="text-gold-antique/50 text-[9px]">{p.email}</p>
+                          <p className="text-gold-antique/50 text-[9px]">{p.phone}</p>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -380,30 +387,35 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-3 font-semibold text-gold-bright">₹{p.amount}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                          p.paymentStatus === 'Approved' ? 'bg-emerald-900/60 text-emerald-300' :
-                          p.paymentStatus === 'Rejected' ? 'bg-red-900/60 text-red-300' :
-                          'bg-yellow-900/60 text-yellow-300'
-                        }`}>
-                          {p.paymentStatus}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        {(p.screenshotUrl || p.driveScreenshotUrl) ? (
-                          <button
-                            onClick={() => {
-                              const raw = p.driveScreenshotUrl || p.screenshotUrl || '';
-                              // If it's a relative /uploads path, prepend backend URL
-                              const url = raw.startsWith('http') ? raw : `http://localhost:5000${raw}`;
-                              setViewingScreenshot(url);
-                            }}
-                            className="flex items-center gap-1 text-gold-antique hover:text-gold-bright transition-colors"
-                          >
-                            <Eye className="w-4 h-4" /> View
-                          </button>
-                        ) : (
-                          <span className="text-royal-ivory/30">—</span>
-                        )}
+                        <div className="space-y-1">
+                          <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] inline-block ${
+                            p.paymentStatus === 'Approved' ? 'bg-emerald-900/60 text-emerald-300' :
+                            p.paymentStatus === 'Rejected' ? 'bg-red-900/60 text-red-300' :
+                            'bg-yellow-900/60 text-yellow-300'
+                          }`}>
+                            {p.paymentStatus}
+                          </span>
+                          {p.paymentStatus === 'Rejected' && p.rejectionReason && (
+                            <p className="text-red-400 text-[9px] max-w-[120px] truncate" title={p.rejectionReason}>
+                              Reason: {p.rejectionReason}
+                            </p>
+                          )}
+                          {p.transactionId && (
+                            <p className="text-gold-antique/70 text-[9px] font-mono">UTR: {p.transactionId}</p>
+                          )}
+                          {(p.screenshotUrl || p.driveScreenshotUrl) && (
+                            <button
+                              onClick={() => {
+                                const raw = p.driveScreenshotUrl || p.screenshotUrl || '';
+                                const url = raw.startsWith('http') ? raw : `http://localhost:5000${raw}`;
+                                setViewingScreenshot(url);
+                              }}
+                              className="flex items-center gap-1 text-gold-antique hover:text-gold-bright transition-colors text-[10px]"
+                            >
+                              <Eye className="w-3.5 h-3.5" /> View SS
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5 flex-wrap">

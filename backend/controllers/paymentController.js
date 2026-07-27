@@ -17,8 +17,18 @@ const submitPayment = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Registration record not found.' });
     }
 
-    if (participant.paymentStatus === 'Pending' || participant.paymentStatus === 'Approved') {
+    if (participant.paymentStatus === 'Pending Verification' || participant.paymentStatus === 'Approved') {
       return res.status(400).json({ success: false, message: `Payment already submitted. Current status: ${participant.paymentStatus}` });
+    }
+
+    if (!req.file && !participant.screenshotUrl) {
+      return res.status(400).json({ success: false, message: 'Payment screenshot is required.' });
+    }
+
+    const cleanTransactionId = transactionId.trim();
+    const existingTx = await Participant.findOne({ transactionId: cleanTransactionId });
+    if (existingTx && existingTx.registrationId !== registrationId) {
+      return res.status(400).json({ success: false, message: 'This Transaction ID is already associated with another payment. Please verify your Transaction ID and try again.' });
     }
 
     let localScreenshotUrl = participant.screenshotUrl;
@@ -34,10 +44,10 @@ const submitPayment = async (req, res) => {
       }
     }
 
-    participant.transactionId = transactionId.trim();
+    participant.transactionId = cleanTransactionId;
     participant.screenshotUrl = localScreenshotUrl;
     participant.driveScreenshotUrl = driveUrl || '';
-    participant.paymentStatus = 'Pending';
+    participant.paymentStatus = 'Pending Verification';
     participant.registrationStatus = 'Submitted';
 
     const updatedParticipant = await participant.save();
@@ -56,6 +66,13 @@ const submitPayment = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in submitPayment:', error);
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      if (field === 'transactionId') {
+        return res.status(400).json({ success: false, message: 'This Transaction ID is already associated with another payment. Please verify your Transaction ID and try again.' });
+      }
+      return res.status(400).json({ success: false, message: `This ${field} is already in use.` });
+    }
     return res.status(500).json({ success: false, message: 'Server error while submitting payment.' });
   }
 };

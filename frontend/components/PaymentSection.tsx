@@ -201,7 +201,7 @@ export default function PaymentSection() {
 
           {/* Right Column: UTR & Screenshot Upload Form or Status */}
           <div>
-            {participant.paymentStatus === 'Pending' || participant.paymentStatus === 'Approved' ? (
+            {participant.paymentStatus === 'Pending Verification' || participant.paymentStatus === 'Approved' ? (
               <div className="p-8 rounded-2xl bg-maroon-900/60 border border-gold-antique/30 text-center space-y-4">
                 <ShieldCheck className="w-12 h-12 text-emerald-400 mx-auto" />
                 <h3 className="font-marcellus text-xl font-bold text-gold-bright">
@@ -210,7 +210,7 @@ export default function PaymentSection() {
                 <p className="font-poppins text-sm text-royal-ivory/80">
                   Current Status: <strong className="text-gold-champagne">{participant.paymentStatus}</strong>
                 </p>
-                {participant.paymentStatus === 'Pending' && (
+                {participant.paymentStatus === 'Pending Verification' && (
                   <p className="font-poppins text-xs text-royal-ivory/60 mt-2">
                     Your payment is currently being verified by our team. Please check back later.
                   </p>
@@ -226,6 +226,11 @@ export default function PaymentSection() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
+                {participant.paymentStatus === 'Rejected' && participant.rejectionReason && (
+                  <div className="mb-4 p-4 rounded-xl bg-red-950/80 border border-red-500/60 text-red-200 text-sm font-poppins text-center">
+                    <strong>Admin Rejection Reason:</strong> {participant.rejectionReason}
+                  </div>
+                )}
                 <div className="p-5 rounded-2xl bg-maroon-900/60 border border-gold-antique/30 space-y-4">
                   <h3 className="font-marcellus text-sm font-bold text-gold-bright flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -242,7 +247,7 @@ export default function PaymentSection() {
                       placeholder="e.g. 429810982312"
                       value={transactionId}
                       onChange={(e) => setTransactionId(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm tracking-wider font-mono"
+                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm tracking-wider font-mono"
                     />
                     <p className="font-poppins text-[10px] text-gold-champagne/70 mt-1">
                       Found in your GPay / PhonePe / Paytm payment status details

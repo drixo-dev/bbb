@@ -8,7 +8,7 @@ const PASS_PRICES = {
 
 const getNextAction = (status) => {
   if (status === 'Not Submitted') return 'CONTINUE_PAYMENT';
-  if (status === 'Pending') return 'VIEW_STATUS';
+  if (status === 'Pending Verification') return 'VIEW_STATUS';
   if (status === 'Approved') return 'VIEW_PASS';
   if (status === 'Rejected') return 'REUPLOAD_PAYMENT';
   return 'CONTINUE_PAYMENT';
@@ -24,15 +24,14 @@ const registerParticipant = async (req, res) => {
 
     const cleanRollNumber = rollNumber.trim().toUpperCase();
 
+    const cleanEmail = (email || '').trim().toLowerCase();
+
     // Check for existing registration
     const existing = await Participant.findOne({ rollNumber: cleanRollNumber });
     if (existing) {
-      return res.status(200).json({
-        success: true,
-        message: 'Registration found.',
-        registrationId: existing.registrationId,
-        participantName: existing.name,
-        nextAction: getNextAction(existing.paymentStatus)
+      return res.status(400).json({
+        success: false,
+        message: 'A registration already exists for this Roll Number. Please use "Find My Registration" to access it.'
       });
     }
 
@@ -81,22 +80,17 @@ const registerParticipant = async (req, res) => {
 
 const resumeRegistration = async (req, res) => {
   try {
-    const { rollNumber, email } = req.body;
+    const { rollNumber } = req.body;
 
-    if (!rollNumber || !email) {
-      return res.status(400).json({ success: false, message: 'Roll Number and Email are required.' });
+    if (!rollNumber) {
+      return res.status(400).json({ success: false, message: 'Roll Number is required.' });
     }
 
     const cleanRollNumber = rollNumber.trim().toUpperCase();
-    const cleanEmail = email.trim().toLowerCase();
 
     const existing = await Participant.findOne({ rollNumber: cleanRollNumber });
     if (!existing) {
-      return res.status(200).json({ success: true, nextAction: 'NOT_FOUND', message: 'No registration found for this Roll Number.' });
-    }
-
-    if ((existing.email || '').toLowerCase() !== cleanEmail) {
-      return res.status(200).json({ success: true, nextAction: 'EMAIL_MISMATCH', message: 'Email does not match our records.' });
+      return res.status(200).json({ success: true, nextAction: 'NOT_FOUND', message: 'Registration not found for this Roll Number.' });
     }
 
     return res.status(200).json({
@@ -142,9 +136,19 @@ const editRegistration = async (req, res) => {
     const activeMembers = memberList.slice(0, expectedMembersCount);
     const price = PASS_PRICES[passType] || 499;
 
+    const newRollNumber = req.body.rollNumber ? req.body.rollNumber.trim().toUpperCase() : participant.rollNumber;
+    const newEmail = email ? email.trim().toLowerCase() : participant.email;
+    const newPhone = phone ? phone.trim() : participant.phone;
+
+    if (newRollNumber !== participant.rollNumber) {
+      const rollExist = await Participant.findOne({ rollNumber: newRollNumber });
+      if (rollExist) return res.status(400).json({ success: false, message: 'This Roll Number is already registered.' });
+    }
+
     participant.name = name ? name.trim() : participant.name;
-    participant.email = email ? email.trim().toLowerCase() : participant.email;
-    participant.phone = phone ? phone.trim() : participant.phone;
+    participant.rollNumber = newRollNumber;
+    participant.email = newEmail;
+    participant.phone = newPhone;
     participant.school = school ? school.trim() : participant.school;
     participant.passType = passType;
     participant.members = activeMembers;

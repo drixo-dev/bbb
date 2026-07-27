@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Crown, Menu, X } from 'lucide-react';
+import ResumeRegistrationModal from './ResumeRegistrationModal';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,6 +67,14 @@ export default function Navbar() {
             </Link>
           ))}
 
+          {/* Find My Registration */}
+          <button
+            onClick={() => setIsResumeModalOpen(true)}
+            className="font-marcellus text-sm tracking-widest text-gold-champagne hover:text-white transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-gold-champagne hover:after:w-full after:transition-all after:duration-300"
+          >
+            Find My Registration
+          </button>
+
           {/* CTA Register Button */}
           <Link
             href="/register"
@@ -97,6 +107,16 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setIsResumeModalOpen(true);
+            }}
+            className="block w-full text-left font-marcellus text-lg text-gold-champagne hover:text-white py-1"
+          >
+            Find My Registration
+          </button>
+
           <Link
             href="/register"
             onClick={() => setMobileMenuOpen(false)}
@@ -106,6 +126,11 @@ export default function Navbar() {
           </Link>
         </div>
       )}
+
+      <ResumeRegistrationModal 
+        isOpen={isResumeModalOpen} 
+        onClose={() => setIsResumeModalOpen(false)} 
+      />
     </nav>
   );
 }

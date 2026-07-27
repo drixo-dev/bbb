@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Crown, Sparkles, User, Mail, Phone, GraduationCap, Users, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Crown, Sparkles, User, Mail, Phone, GraduationCap, Users, ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react';
 import { apiRegister, Member } from '@/lib/api';
+import ResumeRegistrationModal from './ResumeRegistrationModal';
 
 export default function RegistrationForm() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function RegistrationForm() {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
 
   useEffect(() => {
     if (searchParams?.get('pass')) {
@@ -161,7 +163,16 @@ export default function RegistrationForm() {
 
       {errorMessage && (
         <div className="mb-6 p-4 rounded-xl bg-red-950/80 border border-red-500/60 text-red-200 text-xs sm:text-sm font-poppins text-center">
-          ⚠️ {errorMessage}
+          <p className="mb-2">⚠️ {errorMessage}</p>
+          {errorMessage.includes('Find My Registration') && (
+            <button
+              onClick={() => setIsResumeModalOpen(true)}
+              className="mt-2 px-4 py-2 rounded-full bg-red-900/60 hover:bg-red-800 border border-red-500/40 text-red-100 transition-colors inline-flex items-center gap-2"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Go to Find My Registration
+            </button>
+          )}
         </div>
       )}
 
@@ -213,7 +224,7 @@ export default function RegistrationForm() {
                   placeholder="e.g. Aarav Sharma"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
                 />
               </div>
             </div>
@@ -229,7 +240,7 @@ export default function RegistrationForm() {
                 placeholder="e.g. 21BCE1042"
                 value={formData.rollNumber}
                 onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-                className={`w-full px-4 py-3 rounded-xl border border-gold-antique/40 text-royal-ivory font-poppins text-sm uppercase focus:outline-none ${isEditMode ? 'bg-maroon-950/80 text-royal-ivory/50 cursor-not-allowed' : 'bg-maroon-900/90 focus:border-gold-champagne focus:ring-1 focus:ring-gold-champagne placeholder-royal-ivory/40'}`}
+                className={`w-full px-4 py-3 rounded-xl border border-gold-antique/40 text-royal-ivory font-poppins text-sm uppercase focus:outline-none ${isEditMode ? 'bg-maroon-950/80 text-royal-ivory/50 cursor-not-allowed' : 'bg-maroon-900/60 focus:border-gold-champagne focus:ring-1 focus:ring-gold-champagne placeholder-royal-ivory/40'}`}
               />
             </div>
           </div>
@@ -245,7 +256,7 @@ export default function RegistrationForm() {
                 placeholder="9876543210"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
               />
             </div>
 
@@ -259,7 +270,7 @@ export default function RegistrationForm() {
                 placeholder="you@example.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
               />
             </div>
           </div>
@@ -272,7 +283,7 @@ export default function RegistrationForm() {
               <select
                 value={formData.school}
                 onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
               >
                 <option value="SOT">SOT</option>
                 <option value="SLS">SLS</option>
@@ -307,7 +318,7 @@ export default function RegistrationForm() {
                       placeholder={`Name of Member ${idx + 2}`}
                       value={members[idx].name}
                       onChange={(e) => handleMemberChange(idx, 'name', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
+                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
                     />
                   </div>
 
@@ -321,7 +332,7 @@ export default function RegistrationForm() {
                       placeholder={`Roll No of Member ${idx + 2}`}
                       value={members[idx].rollNumber}
                       onChange={(e) => handleMemberChange(idx, 'rollNumber', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/90 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm uppercase"
+                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm uppercase"
                     />
                   </div>
                 </div>
@@ -346,6 +357,11 @@ export default function RegistrationForm() {
           )}
         </button>
       </form>
+
+      <ResumeRegistrationModal 
+        isOpen={isResumeModalOpen} 
+        onClose={() => setIsResumeModalOpen(false)} 
+      />
     </div>
   );
 }

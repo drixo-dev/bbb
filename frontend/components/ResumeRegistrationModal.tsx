@@ -13,7 +13,6 @@ interface ModalProps {
 export default function ResumeRegistrationModal({ isOpen, onClose }: ModalProps) {
   const router = useRouter();
   const [rollNumber, setRollNumber] = useState('');
-  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [foundStatus, setFoundStatus] = useState<'IDLE' | 'CONTINUE_PAYMENT' | 'VIEW_STATUS' | 'VIEW_PASS' | 'REUPLOAD_PAYMENT'>('IDLE');
@@ -25,16 +24,15 @@ export default function ResumeRegistrationModal({ isOpen, onClose }: ModalProps)
     e.preventDefault();
     setError('');
     
-    if (!rollNumber.trim() || !email.trim()) {
-      setError('Both Roll Number and Email are required.');
+    if (!rollNumber.trim()) {
+      setError('Roll Number is required.');
       return;
     }
 
     setLoading(true);
     try {
       const res = await apiResumeRegistration({
-        rollNumber: rollNumber.trim().toUpperCase(),
-        email: email.trim()
+        rollNumber: rollNumber.trim().toUpperCase()
       });
 
       if (res.success) {
@@ -76,10 +74,10 @@ export default function ResumeRegistrationModal({ isOpen, onClose }: ModalProps)
         <div className="text-center mb-6">
           <RefreshCw className="w-8 h-8 text-gold-champagne mx-auto mb-3" />
           <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-gold-gradient mb-1">
-            Resume Registration
+            Find My Registration
           </h2>
           <p className="font-poppins text-xs text-royal-ivory/80">
-            Enter your details to retrieve your pending registration or pass.
+            Enter your Roll Number to find your registration or pass.
           </p>
         </div>
 
@@ -101,21 +99,7 @@ export default function ResumeRegistrationModal({ isOpen, onClose }: ModalProps)
                 placeholder="e.g. 21BCE1042"
                 value={rollNumber}
                 onChange={(e) => setRollNumber(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-maroon-950/80 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm uppercase"
-              />
-            </div>
-            
-            <div>
-              <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
-                Registered Email *
-              </label>
-              <input
-                type="email"
-                required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-maroon-950/80 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm uppercase"
               />
             </div>
 

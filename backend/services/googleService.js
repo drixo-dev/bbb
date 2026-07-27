@@ -63,7 +63,7 @@ class GoogleService {
         memberDetails,
         participant.transactionId || 'Pending',
         participant.driveScreenshotUrl || participant.screenshotUrl || 'Pending Upload',
-        participant.paymentStatus || 'Pending',
+        participant.paymentStatus || 'Pending Verification',
         participant.registrationStatus || 'Submitted',
         participant.checkedIn ? 'Yes' : 'No'
       ];

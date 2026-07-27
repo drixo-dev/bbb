@@ -19,17 +19,21 @@ function PassContent() {
     apiGetPass(id)
       .then(async (res) => {
         if (res.success && res.participant) {
-          setParticipant(res.participant);
-          // Generate QR code for the pass
-          try {
-            const QRCode = await import('qrcode');
-            const url = await QRCode.toDataURL(
-              JSON.stringify({ registrationId: id, event: 'BBB2026', passType: res.participant.passType }),
-              { width: 200, margin: 2, color: { dark: '#3B0811', light: '#F8F3EB' } }
-            );
-            setQrCodeUrl(url);
-          } catch (e) {
-            console.error('QR generation error:', e);
+          if (res.participant.paymentStatus === 'Approved') {
+            setParticipant(res.participant);
+            // Generate QR code for the pass
+            try {
+              const QRCode = await import('qrcode');
+              const url = await QRCode.toDataURL(
+                JSON.stringify({ registrationId: id, event: 'BBB2026', passType: res.participant.passType }),
+                { width: 200, margin: 2, color: { dark: '#3B0811', light: '#F8F3EB' } }
+              );
+              setQrCodeUrl(url);
+            } catch (e) {
+              console.error('QR generation error:', e);
+            }
+          } else {
+            setParticipant(null);
           }
         }
       })
@@ -82,9 +86,9 @@ function PassContent() {
 
   const statusBadge = {
     'Approved': { icon: CheckCircle, text: 'VALID PASS', color: 'text-emerald-400 border-emerald-500/50 bg-emerald-900/30' },
-    'Pending': { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' },
+    'Pending Verification': { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' },
     'Rejected': { icon: XCircle, text: 'PAYMENT REJECTED', color: 'text-red-400 border-red-500/50 bg-red-900/30' },
-  }[participant.paymentStatus] || { icon: Clock, text: 'PENDING', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' };
+  }[participant.paymentStatus] || { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' };
 
   const StatusIcon = statusBadge.icon;
 

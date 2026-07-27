@@ -115,7 +115,7 @@ export default function Hero() {
             </Link>
           </div>
 
-          {/* Resume Registration Link */}
+          {/* Find My Registration Link */}
           <div className="mt-8 pt-6 border-t border-gold-antique/20">
             <p className="font-poppins text-xs text-royal-ivory/60 mb-2">Already Registered?</p>
             <button 
@@ -123,7 +123,7 @@ export default function Hero() {
               className="font-marcellus text-sm font-bold text-gold-champagne hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto"
             >
               <RefreshCw className="w-4 h-4" />
-              Resume Registration / View Pass
+              Find My Registration / View Pass
             </button>
           </div>
         </motion.div>

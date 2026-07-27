@@ -45,7 +45,7 @@ export async function apiRegister(payload: RegisterPayload) {
   return res.json();
 }
 
-export async function apiResumeRegistration(payload: { rollNumber: string; email: string }) {
+export async function apiResumeRegistration(payload: { rollNumber: string }) {
   const res = await fetch(`${API_BASE_URL}/resume-registration`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

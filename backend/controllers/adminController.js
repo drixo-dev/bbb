@@ -34,7 +34,7 @@ const getDashboardStats = async (req, res) => {
     const participants = await Participant.find();
     
     const totalRegistrations = participants.length;
-    const pendingPayments = participants.filter(p => p.paymentStatus === 'Pending').length;
+    const pendingPayments = participants.filter(p => p.paymentStatus === 'Pending Verification').length;
     const approvedPayments = participants.filter(p => p.paymentStatus === 'Approved').length;
     const rejectedPayments = participants.filter(p => p.paymentStatus === 'Rejected').length;
     
@@ -98,18 +98,31 @@ const getParticipants = async (req, res) => {
 
 const updateStatus = async (req, res) => {
   try {
-    const { registrationId, paymentStatus } = req.body;
+    const { registrationId, paymentStatus, rejectionReason } = req.body;
 
-    if (!registrationId || !['Pending', 'Approved', 'Rejected'].includes(paymentStatus)) {
+    if (!registrationId || !['Pending Verification', 'Approved', 'Rejected'].includes(paymentStatus)) {
       return res.status(400).json({ success: false, message: 'Invalid payload.' });
+    }
+
+    const updateFields = { 
+        paymentStatus,
+        registrationStatus: paymentStatus === 'Approved' ? 'Verified' : 'Submitted'
+    };
+    
+    if (paymentStatus === 'Rejected') {
+      if (rejectionReason) updateFields.rejectionReason = rejectionReason.trim();
+      updateFields.checkedIn = false;
+      updateFields.checkedInAt = null;
+    } else if (paymentStatus === 'Approved') {
+      updateFields.rejectionReason = ''; // clear it on approval
+    } else if (paymentStatus === 'Pending Verification') {
+      updateFields.checkedIn = false;
+      updateFields.checkedInAt = null;
     }
 
     const updated = await Participant.findOneAndUpdate(
       { registrationId },
-      { 
-        paymentStatus,
-        registrationStatus: paymentStatus === 'Approved' ? 'Verified' : 'Submitted'
-      },
+      updateFields,
       { new: true }
     );
 
@@ -152,6 +165,10 @@ const editParticipant = async (req, res) => {
       data: updated
     });
   } catch (err) {
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      return res.status(400).json({ success: false, message: `This ${field} is already in use by another participant.` });
+    }
     return res.status(500).json({ success: false, message: 'Error editing participant.' });
   }
 };
