@@ -22,7 +22,17 @@ const participantSchema = new mongoose.Schema({
   registrationStatus: { type: String, enum: ['Submitted', 'Verified', 'Cancelled'], default: 'Submitted' },
   rejectionReason: { type: String, default: '' },
   checkedIn: { type: Boolean, default: false },
-  checkedInAt: { type: Date, default: null }
+  checkedInAt: { type: Date, default: null },
+  ticketCollected: { type: Boolean, default: false },
+  collectedAt: { type: Date, default: null },
+  collectedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null },
+  approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null },
+  approvedAt: { type: Date, default: null },
+  rejectedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null },
+  rejectedAt: { type: Date, default: null },
+  isDeleted: { type: Boolean, default: false },
+  approvalEmailSent: { type: Boolean, default: false },
+  approvalEmailSentAt: { type: Date, default: null }
 }, {
   timestamps: true
 });

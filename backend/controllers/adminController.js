@@ -1,29 +1,60 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Participant = require('../models/Participant');
+const Admin = require('../models/Admin');
 const emailService = require('../services/emailService');
 
 const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const defaultUsername = process.env.ADMIN_USERNAME || 'admin';
-    const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123';
-
-    if (username === defaultUsername && (password === defaultPassword || password === 'admin123')) {
-      const token = jwt.sign(
-        { role: 'admin', username },
-        process.env.JWT_SECRET || 'royal_band_baaja_baarat_2026_super_secret_key_98765',
-        { expiresIn: '24h' }
-      );
-
-      return res.status(200).json({
-        success: true,
-        token,
-        message: 'Admin authentication successful.'
-      });
+    
+    let admin = await Admin.findOne({ email: username.toLowerCase() });
+    
+    // Seed default admin if missing
+    if (!admin) {
+      const defaultUsername = process.env.ADMIN_USERNAME || 'admin';
+      const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123';
+      
+      if (username === defaultUsername && (password === defaultPassword || password === 'admin123')) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(defaultPassword, salt);
+        admin = await Admin.create({
+          name: 'Super Admin',
+          email: defaultUsername.toLowerCase(),
+          password: hashedPassword,
+          role: 'super_admin'
+        });
+      }
     }
+    
+    if (!admin) {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    }
+    
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    }
+    
+    if (!admin.isActive) {
+      return res.status(403).json({ success: false, message: 'Admin account disabled.' });
+    }
+    
+    admin.lastLogin = new Date();
+    await admin.save();
+    
+    const token = jwt.sign(
+      { id: admin._id, role: admin.role, email: admin.email },
+      process.env.JWT_SECRET || 'royal_band_baaja_baarat_2026_super_secret_key_98765',
+      { expiresIn: '24h' }
+    );
 
-    return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    return res.status(200).json({
+      success: true,
+      token,
+      role: admin.role,
+      message: 'Admin authentication successful.'
+    });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Admin login server error.' });
   }
@@ -31,18 +62,14 @@ const adminLogin = async (req, res) => {
 
 const getDashboardStats = async (req, res) => {
   try {
-    const participants = await Participant.find();
+    const totalRegistrations = await Participant.countDocuments({ isDeleted: { $ne: true } });
+    const pendingPayments = await Participant.countDocuments({ paymentStatus: 'Pending Verification', isDeleted: { $ne: true } });
+    const approvedPayments = await Participant.countDocuments({ paymentStatus: 'Approved', isDeleted: { $ne: true } });
+    const rejectedPayments = await Participant.countDocuments({ paymentStatus: 'Rejected', isDeleted: { $ne: true } });
+    const checkedInCount = await Participant.countDocuments({ checkedIn: true, isDeleted: { $ne: true } });
     
-    const totalRegistrations = participants.length;
-    const pendingPayments = participants.filter(p => p.paymentStatus === 'Pending Verification').length;
-    const approvedPayments = participants.filter(p => p.paymentStatus === 'Approved').length;
-    const rejectedPayments = participants.filter(p => p.paymentStatus === 'Rejected').length;
-    
-    const totalRevenue = participants
-      .filter(p => p.paymentStatus === 'Approved')
-      .reduce((sum, p) => sum + (p.amount || 0), 0);
-
-    const checkedInCount = participants.filter(p => p.checkedIn).length;
+    const approvedList = await Participant.find({ paymentStatus: 'Approved', isDeleted: { $ne: true } });
+    const totalRevenue = approvedList.reduce((sum, p) => sum + (p.amount || 0), 0);
 
     return res.status(200).json({
       success: true,
@@ -64,9 +91,9 @@ const getParticipants = async (req, res) => {
   try {
     const { search, passType, paymentStatus } = req.query;
     
-    let query = {};
-    if (search) {
-      const q = new RegExp(search, 'i');
+    let query = { isDeleted: { $ne: true } };
+    if (search && search.trim()) {
+      const q = new RegExp(search.trim(), 'i');
       query.$or = [
         { name: q },
         { email: q },
@@ -113,8 +140,16 @@ const updateStatus = async (req, res) => {
       if (rejectionReason) updateFields.rejectionReason = rejectionReason.trim();
       updateFields.checkedIn = false;
       updateFields.checkedInAt = null;
+      if (req.admin && req.admin.id) {
+          updateFields.rejectedBy = req.admin.id;
+          updateFields.rejectedAt = new Date();
+      }
     } else if (paymentStatus === 'Approved') {
       updateFields.rejectionReason = ''; // clear it on approval
+      if (req.admin && req.admin.id) {
+          updateFields.approvedBy = req.admin.id;
+          updateFields.approvedAt = new Date();
+      }
     } else if (paymentStatus === 'Pending Verification') {
       updateFields.checkedIn = false;
       updateFields.checkedInAt = null;
@@ -130,12 +165,35 @@ const updateStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Participant not found.' });
     }
 
+    let emailStatus = null;
     if (paymentStatus === 'Approved') {
-      emailService.sendConfirmationEmail(updated).catch(e => console.error(e));
+      console.log(`[AUDIT] Payment Approved - Registration: ${registrationId} | By: ${req.admin ? req.admin.id : 'System'} | Time: ${new Date().toISOString()}`);
+      emailStatus = await emailService.sendApprovalEmail(updated);
+      
+      if (emailStatus && emailStatus.success) {
+        updated.approvalEmailSent = true;
+        updated.approvalEmailSentAt = new Date();
+        await updated.save();
+      }
+    } else if (paymentStatus === 'Rejected') {
+      console.log(`[AUDIT] Payment Rejected - Registration: ${registrationId} | Reason: ${rejectionReason} | By: ${req.admin ? req.admin.id : 'System'} | Time: ${new Date().toISOString()}`);
+      await emailService.sendRejectionEmail(updated);
+    }
+
+    if (paymentStatus === 'Approved' && emailStatus && !emailStatus.success) {
+      updated.approvalEmailSent = false;
+      await updated.save();
+      return res.status(200).json({
+        success: true,
+        emailSent: false,
+        message: "Participant approved but the approval email could not be sent.",
+        data: updated
+      });
     }
 
     return res.status(200).json({
       success: true,
+      emailSent: paymentStatus === 'Approved' ? true : undefined,
       message: `Payment status updated to '${paymentStatus}'.`,
       data: updated
     });
@@ -176,7 +234,11 @@ const editParticipant = async (req, res) => {
 const deleteParticipant = async (req, res) => {
   try {
     const { registrationId } = req.params;
-    const deleted = await Participant.findOneAndDelete({ registrationId });
+    const deleted = await Participant.findOneAndUpdate(
+      { registrationId },
+      { $set: { isDeleted: true } },
+      { new: true }
+    );
 
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'Participant not found.' });
@@ -193,13 +255,15 @@ const deleteParticipant = async (req, res) => {
 
 const exportCSV = async (req, res) => {
   try {
-    const participants = await Participant.find();
+    const participants = await Participant.find({ isDeleted: { $ne: true } }).populate('collectedBy', 'name');
     
-    let csv = 'Registration ID,Name,Roll Number,Email,Phone,School,Pass Type,Amount,Payment Status,Transaction ID,Checked In,Registration Time,Members\n';
+    let csv = 'Registration ID,Name,Roll Number,Email,Phone,School,Pass Type,Amount,Payment Status,Transaction ID,Checked In,Registration Time,Collected By,Collected At,Members\n';
 
     participants.forEach(p => {
       const membersStr = p.members && p.members.length ? p.members.map(m => `${m.name} (${m.rollNumber})`).join(' | ') : 'N/A';
-      csv += `"${p.registrationId}","${p.name}","${p.rollNumber}","${p.email || ''}","${p.phone}","${p.school || ''}","${p.passType}","${p.amount}","${p.paymentStatus}","${p.transactionId || ''}","${p.checkedIn ? 'Yes' : 'No'}","${p.createdAt || ''}","${membersStr.replace(/"/g, '""')}"\n`;
+      const collectedByStr = p.collectedBy ? p.collectedBy.name : (p.ticketCollected ? 'Unknown' : 'N/A');
+      const collectedAtStr = p.collectedAt ? p.collectedAt.toISOString() : 'N/A';
+      csv += `"${p.registrationId}","${p.name}","${p.rollNumber}","${p.email || ''}","${p.phone}","${p.school || ''}","${p.passType}","${p.amount}","${p.paymentStatus}","${p.transactionId || ''}","${p.checkedIn ? 'Yes' : 'No'}","${p.createdAt || ''}","${collectedByStr}","${collectedAtStr}","${membersStr.replace(/"/g, '""')}"\n`;
     });
 
     res.setHeader('Content-Type', 'text/csv');
@@ -210,49 +274,46 @@ const exportCSV = async (req, res) => {
   }
 };
 
-const verifyPassQR = async (req, res) => {
+const resendApprovalEmail = async (req, res) => {
   try {
-    const { registrationId } = req.body;
-    if (!registrationId) {
-      return res.status(400).json({ success: false, message: 'Registration ID required for scanning.' });
-    }
-
-    const participant = await Participant.findOne({ registrationId });
+    const { participantId } = req.params;
+    
+    // We can search by registrationId since it acts as the primary identifier on frontend,
+    // or by _id. Let's assume registrationId based on param name 'participantId' conventionally used above.
+    const participant = await Participant.findOne({ registrationId: participantId });
+    
     if (!participant) {
-      return res.status(404).json({ success: false, valid: false, message: 'INVALID PASS: Registration ID not found in database.' });
+      return res.status(404).json({ success: false, message: 'Participant not found.' });
     }
 
     if (participant.paymentStatus !== 'Approved') {
-      return res.status(400).json({
-        success: false,
-        valid: false,
-        message: `PASS UNVERIFIED: Payment status is currently '${participant.paymentStatus}'. Entrance rejected.`,
-        participant
+      return res.status(400).json({ success: false, message: 'Participant is not approved.' });
+    }
+
+    const emailStatus = await emailService.sendApprovalEmail(participant);
+    
+    if (!emailStatus.success) {
+      participant.approvalEmailSent = false;
+      await participant.save();
+      return res.status(200).json({
+        success: true,
+        emailSent: false,
+        message: "Participant approved but the approval email could not be sent."
       });
     }
 
-    if (participant.checkedIn) {
-      return res.status(400).json({
-        success: false,
-        valid: false,
-        message: `ALREADY USED: Pass ${registrationId} was already scanned for entry at ${participant.checkedInAt || 'earlier time'}.`,
-        participant
-      });
-    }
-
-    // Mark as checked in
-    participant.checkedIn = true;
-    participant.checkedInAt = new Date();
-    const updated = await participant.save();
+    participant.approvalEmailSent = true;
+    participant.approvalEmailSentAt = new Date();
+    await participant.save();
 
     return res.status(200).json({
       success: true,
-      valid: true,
-      message: `🎉 WELCOME TO BAND BAAJA BAARAT 2026! Entry granted for ${participant.name} (${participant.passType}).`,
-      participant: updated
+      emailSent: true,
+      message: 'Approval email resent successfully.'
     });
+
   } catch (err) {
-    return res.status(500).json({ success: false, message: 'QR Check-in scanner error.' });
+    return res.status(500).json({ success: false, message: 'Error resending email.' });
   }
 };
 
@@ -264,5 +325,5 @@ module.exports = {
   editParticipant,
   deleteParticipant,
   exportCSV,
-  verifyPassQR
+  resendApprovalEmail
 };

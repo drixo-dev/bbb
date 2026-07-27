@@ -1,4 +1,5 @@
 const Participant = require('../models/Participant');
+const crypto = require('crypto');
 
 const PASS_PRICES = {
   'Single Pass': 499,
@@ -49,7 +50,7 @@ const registerParticipant = async (req, res) => {
     }
 
     const price = PASS_PRICES[passType] || 499;
-    const registrationId = 'BBB26-' + Math.floor(100000 + Math.random() * 900000);
+    const registrationId = 'BBB26-' + crypto.randomBytes(4).toString('hex').toUpperCase();
 
     const newParticipant = new Participant({
       registrationId,

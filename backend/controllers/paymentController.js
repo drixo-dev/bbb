@@ -56,7 +56,7 @@ const submitPayment = async (req, res) => {
     googleService.appendToSheet(updatedParticipant).catch(err => console.error('Sheet sync background error:', err));
 
     // Send email & WhatsApp notification simulation
-    emailService.sendConfirmationEmail(updatedParticipant).catch(err => console.error('Email background error:', err));
+    emailService.sendSubmissionEmail(updatedParticipant).catch(err => console.error('Email background error:', err));
     whatsappService.sendWhatsAppMessage(updatedParticipant).catch(err => console.error('WhatsApp background error:', err));
 
     return res.status(200).json({

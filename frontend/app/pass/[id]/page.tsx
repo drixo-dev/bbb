@@ -88,6 +88,7 @@ function PassContent() {
     'Approved': { icon: CheckCircle, text: 'VALID PASS', color: 'text-emerald-400 border-emerald-500/50 bg-emerald-900/30' },
     'Pending Verification': { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' },
     'Rejected': { icon: XCircle, text: 'PAYMENT REJECTED', color: 'text-red-400 border-red-500/50 bg-red-900/30' },
+    'Not Submitted': { icon: Clock, text: 'NOT SUBMITTED', color: 'text-gray-400 border-gray-500/50 bg-gray-900/30' },
   }[participant.paymentStatus] || { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' };
 
   const StatusIcon = statusBadge.icon;

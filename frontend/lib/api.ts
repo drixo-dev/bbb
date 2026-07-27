@@ -28,10 +28,11 @@ export interface Participant {
   transactionId?: string;
   screenshotUrl?: string;
   driveScreenshotUrl?: string;
-  paymentStatus: 'Not Submitted' | 'Pending' | 'Approved' | 'Rejected';
+  paymentStatus: 'Not Submitted' | 'Pending Verification' | 'Approved' | 'Rejected';
   registrationStatus: 'Submitted' | 'Verified' | 'Cancelled';
   checkedIn: boolean;
   checkedInAt?: string;
+  rejectionReason?: string;
   createdAt: string;
 }
 
@@ -101,14 +102,14 @@ export async function apiAdminGetParticipants(token: string, search = '', passTy
   return res.json();
 }
 
-export async function apiAdminUpdateStatus(token: string, registrationId: string, paymentStatus: string) {
+export async function apiAdminUpdateStatus(token: string, registrationId: string, paymentStatus: string, rejectionReason?: string) {
   const res = await fetch(`${API_BASE_URL}/admin/update-status`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ registrationId, paymentStatus }),
+    body: JSON.stringify({ registrationId, paymentStatus, rejectionReason }),
   });
   return res.json();
 }
@@ -147,4 +148,24 @@ export async function apiAdminVerifyPass(token: string, registrationId: string) 
 
 export function getExportCSVUrl(token: string) {
   return `${API_BASE_URL}/admin/export-csv?token=${token}`;
+}
+
+// Volunteer APIs
+export async function apiVolunteerGetParticipant(token: string, registrationId: string) {
+  const res = await fetch(`${API_BASE_URL}/volunteer/participant/${registrationId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+export async function apiVolunteerCollectPass(token: string, registrationId: string) {
+  const res = await fetch(`${API_BASE_URL}/volunteer/collect-pass`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ registrationId }),
+  });
+  return res.json();
 }

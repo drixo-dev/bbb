@@ -43,10 +43,19 @@ export default function AdminPage() {
   // Viewing Screenshot
   const [viewingScreenshot, setViewingScreenshot] = useState<string | null>(null);
 
+  // Rejection Modal
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReasonText, setRejectReasonText] = useState<string>('');
+
   // Check token in sessionStorage on mount
   useEffect(() => {
     const savedToken = sessionStorage.getItem('bbb_admin_token');
+    const savedRole = sessionStorage.getItem('bbb_admin_role');
     if (savedToken) {
+      if (savedRole === 'volunteer') {
+        router.push('/volunteer');
+        return;
+      }
       setToken(savedToken);
       setIsAuthenticated(true);
     }
@@ -83,6 +92,11 @@ export default function AdminPage() {
       const res = await apiAdminLogin(username, password);
       if (res.success && res.token) {
         sessionStorage.setItem('bbb_admin_token', res.token);
+        sessionStorage.setItem('bbb_admin_role', res.role);
+        if (res.role === 'volunteer') {
+            router.push('/volunteer');
+            return;
+        }
         setToken(res.token);
         setIsAuthenticated(true);
       } else {
@@ -97,19 +111,26 @@ export default function AdminPage() {
 
   const handleLogout = () => {
     sessionStorage.removeItem('bbb_admin_token');
+    sessionStorage.removeItem('bbb_admin_role');
     setToken('');
     setIsAuthenticated(false);
   };
 
   const handleStatusChange = async (registrationId: string, status: string) => {
-    let rejectionReason = undefined;
     if (status === 'Rejected') {
-      const reason = prompt('Please enter a reason for rejecting this payment:');
-      if (reason === null) return; // cancelled
-      rejectionReason = reason;
+      setRejectingId(registrationId);
+      setRejectReasonText('');
+      return;
     }
-    const res = await apiAdminUpdateStatus(token, registrationId, status, rejectionReason);
+    const res = await apiAdminUpdateStatus(token, registrationId, status);
     if (res.success) fetchData();
+  };
+
+  const submitRejection = async () => {
+    if (!rejectingId) return;
+    const res = await apiAdminUpdateStatus(token, rejectingId, 'Rejected', rejectReasonText);
+    if (res.success) fetchData();
+    setRejectingId(null);
   };
 
   const handleDelete = async (registrationId: string) => {
@@ -237,50 +258,23 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* QR Scanner for Event Day Check-In */}
+        {/* Pass Collection link */}
         <div className="box-gold-frame rounded-2xl p-6 bg-maroon-900/80">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-cinzel text-lg font-bold text-gold-gradient flex items-center gap-2">
               <QrCode className="w-5 h-5 text-gold-champagne" />
-              Event Day QR Check-In Scanner
+              Volunteer Pass Collection
             </h2>
-            <button
-              onClick={() => setShowQR(!showQR)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-maroon-800 border border-gold-antique/40 text-gold-champagne font-marcellus text-xs hover:bg-maroon-700 transition-all"
+            <Link
+              href="/volunteer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-marcellus font-bold text-xs shadow-gold-glow hover:scale-105 transition-all whitespace-nowrap"
             >
-              {showQR ? 'Hide Scanner' : 'Open Scanner'}
-            </button>
+              Pass Collection
+            </Link>
           </div>
-
-          {showQR && (
-            <div className="space-y-4">
-              {scanMessage && (
-                <div className={`p-4 rounded-xl border text-sm font-poppins ${scanMessage.success ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300' : 'bg-red-950/60 border-red-500/40 text-red-300'}`}>
-                  {scanMessage.success ? '✅' : '❌'} {scanMessage.text}
-                </div>
-              )}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  ref={qrManualRef}
-                  type="text"
-                  placeholder="Enter / Paste Registration ID manually (e.g., BBB26-123456)"
-                  value={scanResult}
-                  onChange={(e) => setScanResult(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleQRVerify()}
-                  className="flex-1 px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none font-poppins text-sm font-mono"
-                />
-                <button
-                  onClick={handleQRVerify}
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-marcellus font-bold text-sm uppercase shadow-gold-glow hover:scale-105 transition-all whitespace-nowrap"
-                >
-                  Verify Entry
-                </button>
-              </div>
-              <p className="font-poppins text-[10px] text-gold-warm/60 text-center">
-                Use a QR code scanner device or manually enter the Registration ID for event gate entry verification.
-              </p>
-            </div>
-          )}
+          <p className="font-poppins text-xs text-gold-warm/60">
+            Navigate to the dedicated volunteer page to scan QR codes and distribute passes.
+          </p>
         </div>
 
         {/* Participants Table */}
@@ -468,6 +462,38 @@ export default function AdminPage() {
           <div className="relative max-w-2xl w-full box-gold-frame rounded-2xl overflow-hidden bg-maroon-900 p-4">
             <button onClick={() => setViewingScreenshot(null)} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-maroon-800 border border-gold-antique/40 text-gold-champagne flex items-center justify-center hover:scale-110 transition-transform z-10">✕</button>
             <img src={viewingScreenshot} alt="Payment Screenshot" className="w-full max-h-[75vh] object-contain rounded-xl" />
+          </div>
+        </div>
+      )}
+
+      {/* Rejection Modal */}
+      {rejectingId && (
+        <div className="fixed inset-0 z-50 bg-maroon-950/95 flex items-center justify-center p-4">
+          <div className="relative max-w-lg w-full box-gold-frame rounded-2xl overflow-hidden bg-maroon-900 p-6">
+            <h3 className="text-xl font-bold text-red-400 mb-4">Reject Payment</h3>
+            <p className="text-gold-champagne/80 mb-4 text-sm">
+              Please provide a reason for rejecting this registration. This will be sent in the email to the participant.
+            </p>
+            <textarea
+              className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne h-32 resize-none font-poppins text-sm"
+              placeholder="e.g., The screenshot is blurry, please re-upload a clear image showing the UTR number."
+              value={rejectReasonText}
+              onChange={(e) => setRejectReasonText(e.target.value)}
+            />
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setRejectingId(null)}
+                className="px-4 py-2 rounded-xl border border-gold-antique/30 text-gold-champagne hover:bg-gold-antique/10 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitRejection}
+                className="px-4 py-2 rounded-xl bg-red-900/60 border border-red-500/40 text-red-100 hover:bg-red-800 transition-colors shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+              >
+                Confirm Rejection
+              </button>
+            </div>
           </div>
         </div>
       )}

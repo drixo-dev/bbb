@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 
 const apiRoutes = require('./routes/api');
 const adminRoutes = require('./routes/admin');
+const volunteerRoutes = require('./routes/volunteer');
 
 const app = express();
 
@@ -30,10 +31,20 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB before starting Express
-connectDB().then(() => {
+connectDB().then(async () => {
+  // Clean up the accidental unique index on transactionId if it exists
+  try {
+    const Participant = require('./models/Participant');
+    await Participant.collection.dropIndex('transactionId_1');
+    console.log('✅ Cleaned up transactionId index.');
+  } catch (e) {
+    // Ignore if index doesn't exist
+  }
+
   // API Routes
   app.use('/api', apiRoutes);
   app.use('/api/admin', adminRoutes);
+  app.use('/api/volunteer', volunteerRoutes);
 
   app.listen(PORT, () => {
     console.log(`\n==================================================`);
