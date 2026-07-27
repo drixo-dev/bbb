@@ -41,6 +41,6 @@ router.put('/participant/:registrationId', adminOnly, editParticipant);
 router.delete('/participant/:registrationId', roleMiddleware(['super_admin']), deleteParticipant);
 router.get('/export-csv', roleMiddleware(['super_admin']), exportCSV);
 router.post('/resend-approval-email/:participantId', adminOnly, resendApprovalEmail);
-router.post('/staff', roleMiddleware(['super_admin']), createStaff);
+router.post('/staff', adminOnly, createStaff);
 
 module.exports = router;

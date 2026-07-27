@@ -279,22 +279,22 @@ export default function AdminPage() {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex gap-4 items-center flex-wrap">
+            {(userRole === 'super_admin' || userRole === 'admin') && (
+              <button
+                onClick={() => setIsStaffModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-900/40 text-blue-300 font-poppins text-sm font-semibold border border-blue-500/30 hover:bg-blue-900/60 transition-colors"
+              >
+                <UserPlus className="w-4 h-4" /> Add Staff
+              </button>
+            )}
             {userRole === 'super_admin' && (
-              <>
-                <button
-                  onClick={() => setIsStaffModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-900/40 text-blue-300 font-poppins text-sm font-semibold border border-blue-500/30 hover:bg-blue-900/60 transition-colors"
-                >
-                  <UserPlus className="w-4 h-4" /> Add Staff
-                </button>
-                <a
-                  href={getExportCSVUrl(token)}
-                  download
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-900/40 text-emerald-400 font-poppins text-sm font-semibold border border-emerald-500/30 hover:bg-emerald-900/60 transition-colors"
-                >
-                  <FileText className="w-4 h-4" /> Export CSV
-                </a>
-              </>
+              <a
+                href={getExportCSVUrl(token)}
+                download
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-900/40 text-emerald-400 font-poppins text-sm font-semibold border border-emerald-500/30 hover:bg-emerald-900/60 transition-colors"
+              >
+                <FileText className="w-4 h-4" /> Export CSV
+              </a>
             )}
           </div>
           <button
@@ -701,9 +701,11 @@ export default function AdminPage() {
                   onChange={(e) => setStaffFormData({...staffFormData, role: e.target.value})}
                   className="w-full bg-black/40 border border-gold-antique/20 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-gold-antique appearance-none"
                 >
-                  <option value="volunteer">Volunteer (Scanner Only)</option>
-                  <option value="admin">Admin (Manage Participants)</option>
-                  <option value="super_admin">Super Admin (Full Access)</option>
+                  <option value="volunteer">Volunteer</option>
+                  <option value="admin">Admin</option>
+                  {userRole === 'super_admin' && (
+                    <option value="super_admin">Super Admin</option>
+                  )}
                 </select>
               </div>
 

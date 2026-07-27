@@ -329,6 +329,10 @@ const createStaff = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid role.' });
     }
 
+    if (req.admin.role !== 'super_admin' && role === 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Only Super Admins can create other Super Admins.' });
+    }
+
     const existing = await Admin.findOne({ email: email.toLowerCase() });
     if (existing) {
       return res.status(400).json({ success: false, message: 'An account with this email/username already exists.' });
