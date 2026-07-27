@@ -26,21 +26,33 @@ class EmailService {
     }
 
     try {
-      // Use quickchart.io to generate a publicly accessible QR code image URL
-      const qrImageUrl = `https://quickchart.io/qr?text=${encodeURIComponent(participant.registrationId)}&size=300&margin=2`;
+      // Generate the QR Code directly on the server as an image buffer
+      const qrBuffer = await QRCode.toBuffer(participant.registrationId.toString(), {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#5D0F1D', // BBB dark red
+          light: '#FFFFFF'
+        }
+      });
 
       const htmlContent = approvalEmailTemplate({
         name: participant.name,
         registrationId: participant.registrationId,
-        passType: participant.passType,
-        qrCode: qrImageUrl
+        passType: participant.passType
       });
 
       const { data, error } = await this.resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'BBB 2026 <onboarding@resend.dev>',
         to: participant.email,
         subject: '🎉 BBB 2026 Registration Approved',
-        html: htmlContent
+        html: htmlContent,
+        attachments: [
+          {
+            filename: 'BBB_2026_Royal_Ticket.png',
+            content: qrBuffer
+          }
+        ]
       });
 
       if (error) {
