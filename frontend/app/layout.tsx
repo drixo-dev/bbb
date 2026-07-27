@@ -9,6 +9,11 @@ export const metadata: Metadata = {
     title: 'Band Baaja Baarat 2026 — Royal Freshers Celebration',
     description: 'Book your royal pass for the grandest Freshers night celebration!',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Band Baaja Baarat 2026 — Royal Freshers Celebration',
+    description: 'Book your royal pass for the grandest Freshers night celebration!',
   }
 };
 
