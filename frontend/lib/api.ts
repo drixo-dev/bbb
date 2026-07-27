@@ -34,6 +34,7 @@ export interface Participant {
   checkedInAt?: string;
   rejectionReason?: string;
   createdAt: string;
+  ticketCollected?: boolean;
 }
 
 // Public APIs
@@ -146,13 +147,25 @@ export async function apiAdminVerifyPass(token: string, registrationId: string) 
   return res.json();
 }
 
-export async function apiAdminResendEmail(token: string, registrationId: string) {
-  const res = await fetch(`${API_BASE_URL}/admin/resend-approval-email/${registrationId}`, {
+export const apiAdminResendEmail = async (token: string, participantId: string) => {
+  const res = await fetch(`${API_BASE_URL}/admin/resend-approval-email/${participantId}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();
-}
+};
+
+export const apiAdminCreateStaff = async (token: string, data: any) => {
+  const res = await fetch(`${API_BASE_URL}/admin/staff`, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` 
+    },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+};
 
 export function getExportCSVUrl(token: string) {
   return `${API_BASE_URL}/admin/export-csv?token=${token}`;

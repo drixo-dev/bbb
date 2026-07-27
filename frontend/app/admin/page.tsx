@@ -5,24 +5,30 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Crown, LayoutDashboard, Users, DollarSign, Clock, CheckCircle, XCircle,
-  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail
+  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail, UserPlus, FileText
 } from 'lucide-react';
 import {
   apiAdminLogin, apiAdminGetStats, apiAdminGetParticipants,
   apiAdminUpdateStatus, apiAdminDeleteParticipant, getExportCSVUrl,
-  apiAdminVerifyPass, Participant, apiAdminEditParticipant, apiAdminResendEmail
+  apiAdminVerifyPass, Participant, apiAdminEditParticipant, apiAdminResendEmail, apiAdminCreateStaff
 } from '@/lib/api';
 
 export default function AdminPage() {
   const router = useRouter();
   const [token, setToken] = useState<string>('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string>('');
 
   // Login form
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
+
+  // Staff Modal
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
+  const [staffSubmitting, setStaffSubmitting] = useState(false);
+  const [staffFormData, setStaffFormData] = useState({ name: '', email: '', password: '', role: 'volunteer' });
 
   // Dashboard data
   const [stats, setStats] = useState<Record<string, number>>({});
@@ -56,6 +62,7 @@ export default function AdminPage() {
     const savedToken = sessionStorage.getItem('bbb_admin_token');
     const savedRole = sessionStorage.getItem('bbb_admin_role');
     if (savedToken) {
+      if (savedRole) setUserRole(savedRole);
       if (savedRole === 'volunteer') {
         router.push('/volunteer');
         return;
@@ -97,6 +104,7 @@ export default function AdminPage() {
       if (res.success && res.token) {
         sessionStorage.setItem('bbb_admin_token', res.token);
         sessionStorage.setItem('bbb_admin_role', res.role);
+        setUserRole(res.role);
         if (res.role === 'volunteer') {
             router.push('/volunteer');
             return;
@@ -171,6 +179,25 @@ export default function AdminPage() {
     setScanMessage({ text: res.message, success: res.valid });
     setScanResult('');
     fetchData();
+  };
+
+  const handleCreateStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStaffSubmitting(true);
+    try {
+      const res = await apiAdminCreateStaff(token, staffFormData);
+      if (res.success) {
+        alert('Staff account created successfully!');
+        setIsStaffModalOpen(false);
+        setStaffFormData({ name: '', email: '', password: '', role: 'volunteer' });
+      } else {
+        alert(res.message || 'Failed to create staff account.');
+      }
+    } catch (err) {
+      alert('Error connecting to server.');
+    } finally {
+      setStaffSubmitting(false);
+    }
   };
 
   // ============ LOGIN SCREEN ============
@@ -251,14 +278,25 @@ export default function AdminPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <a
-            href={getExportCSVUrl(token)}
-            download
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-gold-antique/50 text-gold-champagne font-marcellus text-xs hover:bg-maroon-800 transition-all"
-          >
-            <Download className="w-4 h-4" />
-            Export CSV
-          </a>
+          <div className="flex gap-4 items-center flex-wrap">
+            {userRole === 'super_admin' && (
+              <>
+                <button
+                  onClick={() => setIsStaffModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-900/40 text-blue-300 font-poppins text-sm font-semibold border border-blue-500/30 hover:bg-blue-900/60 transition-colors"
+                >
+                  <UserPlus className="w-4 h-4" /> Add Staff
+                </button>
+                <a
+                  href={getExportCSVUrl(token)}
+                  download
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-900/40 text-emerald-400 font-poppins text-sm font-semibold border border-emerald-500/30 hover:bg-emerald-900/60 transition-colors"
+                >
+                  <FileText className="w-4 h-4" /> Export CSV
+                </a>
+              </>
+            )}
+          </div>
           <button
             onClick={handleLogout}
             className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-red-500/40 text-red-400 font-marcellus text-xs hover:bg-red-950/30 transition-all"
@@ -607,6 +645,89 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+      {/* Create Staff Modal */}
+      {isStaffModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-maroon-950 border border-gold-antique/20 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+            <button
+              onClick={() => setIsStaffModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
+            <h3 className="font-cinzel text-xl text-gold-gradient mb-6">Create Staff Account</h3>
+            
+            <form onSubmit={handleCreateStaff} className="space-y-4">
+              <div>
+                <label className="block text-gold-champagne text-xs uppercase tracking-wider mb-2 font-semibold">Name</label>
+                <input
+                  type="text"
+                  required
+                  value={staffFormData.name}
+                  onChange={(e) => setStaffFormData({...staffFormData, name: e.target.value})}
+                  className="w-full bg-black/40 border border-gold-antique/20 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-gold-antique"
+                  placeholder="e.g. Rahul Sharma"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-gold-champagne text-xs uppercase tracking-wider mb-2 font-semibold">Username / Email</label>
+                <input
+                  type="text"
+                  required
+                  value={staffFormData.email}
+                  onChange={(e) => setStaffFormData({...staffFormData, email: e.target.value})}
+                  className="w-full bg-black/40 border border-gold-antique/20 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-gold-antique"
+                  placeholder="e.g. rahul123 or rahul@email.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gold-champagne text-xs uppercase tracking-wider mb-2 font-semibold">Password</label>
+                <input
+                  type="password"
+                  required
+                  value={staffFormData.password}
+                  onChange={(e) => setStaffFormData({...staffFormData, password: e.target.value})}
+                  className="w-full bg-black/40 border border-gold-antique/20 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-gold-antique"
+                  placeholder="Enter a secure password"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gold-champagne text-xs uppercase tracking-wider mb-2 font-semibold">Role</label>
+                <select
+                  value={staffFormData.role}
+                  onChange={(e) => setStaffFormData({...staffFormData, role: e.target.value})}
+                  className="w-full bg-black/40 border border-gold-antique/20 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-gold-antique appearance-none"
+                >
+                  <option value="volunteer">Volunteer (Scanner Only)</option>
+                  <option value="admin">Admin (Manage Participants)</option>
+                  <option value="super_admin">Super Admin (Full Access)</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsStaffModalOpen(false)}
+                  className="px-4 py-2 rounded-lg font-poppins text-sm font-semibold text-gray-400 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={staffSubmitting}
+                  className="px-6 py-2 rounded-lg bg-gold-antique text-maroon-900 font-marcellus font-bold text-sm hover:shadow-gold-glow transition-all disabled:opacity-50"
+                >
+                  {staffSubmitting ? 'Creating...' : 'Create Account'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -317,6 +317,42 @@ const resendApprovalEmail = async (req, res) => {
   }
 };
 
+const createStaff = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+
+    if (!['super_admin', 'admin', 'volunteer'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Invalid role.' });
+    }
+
+    const existing = await Admin.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'An account with this email/username already exists.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newAdmin = await Admin.create({
+      name,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      role
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Staff account created successfully.'
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Error creating staff account.' });
+  }
+};
+
 module.exports = {
   adminLogin,
   getDashboardStats,
@@ -325,5 +361,6 @@ module.exports = {
   editParticipant,
   deleteParticipant,
   exportCSV,
-  resendApprovalEmail
+  resendApprovalEmail,
+  createStaff
 };

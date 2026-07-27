@@ -10,7 +10,8 @@ const {
   editParticipant,
   deleteParticipant,
   exportCSV,
-  resendApprovalEmail
+  resendApprovalEmail,
+  createStaff
 } = require('../controllers/adminController');
 
 const rateLimit = require('express-rate-limit');
@@ -40,5 +41,6 @@ router.put('/participant/:registrationId', adminOnly, editParticipant);
 router.delete('/participant/:registrationId', roleMiddleware(['super_admin']), deleteParticipant);
 router.get('/export-csv', roleMiddleware(['super_admin']), exportCSV);
 router.post('/resend-approval-email/:participantId', adminOnly, resendApprovalEmail);
+router.post('/staff', roleMiddleware(['super_admin']), createStaff);
 
 module.exports = router;
