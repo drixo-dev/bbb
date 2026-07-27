@@ -84,12 +84,16 @@ function PassContent() {
     );
   }
 
-  const statusBadge = {
-    'Approved': { icon: CheckCircle, text: 'VALID PASS', color: 'text-emerald-400 border-emerald-500/50 bg-emerald-900/30' },
-    'Pending Verification': { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' },
-    'Rejected': { icon: XCircle, text: 'PAYMENT REJECTED', color: 'text-red-400 border-red-500/50 bg-red-900/30' },
-    'Not Submitted': { icon: Clock, text: 'NOT SUBMITTED', color: 'text-gray-400 border-gray-500/50 bg-gray-900/30' },
-  }[participant.paymentStatus] || { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' };
+  const isCollected = participant.ticketCollected;
+
+  const statusBadge = isCollected 
+    ? { icon: CheckCircle, text: 'PASS COLLECTED', color: 'text-purple-400 border-purple-500/50 bg-purple-900/30' }
+    : {
+        'Approved': { icon: CheckCircle, text: 'VALID PASS', color: 'text-emerald-400 border-emerald-500/50 bg-emerald-900/30' },
+        'Pending Verification': { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' },
+        'Rejected': { icon: XCircle, text: 'PAYMENT REJECTED', color: 'text-red-400 border-red-500/50 bg-red-900/30' },
+        'Not Submitted': { icon: Clock, text: 'NOT SUBMITTED', color: 'text-gray-400 border-gray-500/50 bg-gray-900/30' },
+      }[participant.paymentStatus] || { icon: Clock, text: 'PENDING VERIFICATION', color: 'text-yellow-300 border-yellow-500/50 bg-yellow-900/30' };
 
   const StatusIcon = statusBadge.icon;
 
@@ -119,12 +123,19 @@ function PassContent() {
             </div>
 
             {/* QR Code */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center relative">
+              {isCollected && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center top-0 left-0 right-0 h-48 mt-0 bg-maroon-900/80 rounded-2xl border-4 border-purple-500/50 backdrop-blur-sm">
+                  <div className="transform -rotate-12 border-4 border-purple-500 text-purple-400 font-cinzel font-bold text-xl px-4 py-2 rounded-lg tracking-widest bg-maroon-950/90 shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                    REDEEMED
+                  </div>
+                </div>
+              )}
               {qrCodeUrl ? (
                 <img
                   src={qrCodeUrl}
                   alt="E-Pass QR Code"
-                  className="w-48 h-48 rounded-2xl border-4 border-gold-antique shadow-gold-glow"
+                  className={`w-48 h-48 rounded-2xl border-4 border-gold-antique shadow-gold-glow ${isCollected ? 'opacity-30 grayscale' : ''}`}
                 />
               ) : (
                 <div className="w-48 h-48 rounded-2xl border-4 border-gold-antique/40 flex items-center justify-center bg-maroon-900">
