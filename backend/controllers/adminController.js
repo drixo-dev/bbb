@@ -66,7 +66,7 @@ const getDashboardStats = async (req, res) => {
     const pendingPayments = await Participant.countDocuments({ paymentStatus: 'Pending Verification', isDeleted: { $ne: true } });
     const approvedPayments = await Participant.countDocuments({ paymentStatus: 'Approved', isDeleted: { $ne: true } });
     const rejectedPayments = await Participant.countDocuments({ paymentStatus: 'Rejected', isDeleted: { $ne: true } });
-    const checkedInCount = await Participant.countDocuments({ checkedIn: true, isDeleted: { $ne: true } });
+    const checkedInCount = await Participant.countDocuments({ ticketCollected: true, isDeleted: { $ne: true } });
     
     const approvedList = await Participant.find({ paymentStatus: 'Approved', isDeleted: { $ne: true } });
     const totalRevenue = approvedList.reduce((sum, p) => sum + (p.amount || 0), 0);

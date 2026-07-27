@@ -239,7 +239,7 @@ export default function AdminPage() {
     { label: 'Pending Payments', value: stats.pendingPayments || 0, icon: Clock, color: 'text-yellow-300' },
     { label: 'Approved Payments', value: stats.approvedPayments || 0, icon: CheckCircle, color: 'text-emerald-400' },
     { label: 'Rejected Payments', value: stats.rejectedPayments || 0, icon: XCircle, color: 'text-red-400' },
-    { label: 'Checked In', value: stats.checkedInCount || 0, icon: QrCode, color: 'text-purple-400' },
+    { label: 'Pass Collected', value: stats.checkedInCount || 0, icon: QrCode, color: 'text-purple-400' },
   ];
 
   return (
@@ -384,7 +384,7 @@ export default function AdminPage() {
                     <tr key={p.registrationId} className="border-b border-gold-antique/10 hover:bg-maroon-800/40 transition-colors">
                       <td className="px-4 py-3">
                         <span className="font-mono text-gold-champagne text-[11px]">{p.registrationId}</span>
-                        {p.checkedIn && <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-900/50 text-emerald-400">✓ In</span>}
+                        {p.ticketCollected && <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-purple-900/50 text-purple-400">✓ Collected</span>}
                       </td>
                       <td className="px-4 py-3">
                         <div>
