@@ -48,7 +48,7 @@ export default function VolunteerPage() {
         setLoginError(res.message || 'Invalid credentials.');
       }
     } catch {
-      setLoginError('Cannot connect to backend server.');
+      setLoginError('Cannot connect to backend server. If a deployment is in progress, please wait 1-2 minutes and try again.');
     } finally {
       setLoggingIn(false);
     }

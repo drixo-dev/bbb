@@ -115,7 +115,7 @@ export default function AdminPage() {
         setLoginError(res.message || 'Invalid credentials.');
       }
     } catch {
-      setLoginError('Cannot connect to backend server. Ensure it is running on port 5000.');
+      setLoginError('Cannot connect to backend server. If a deployment is in progress, please wait 1-2 minutes and try again.');
     } finally {
       setLoggingIn(false);
     }
