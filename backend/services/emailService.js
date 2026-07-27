@@ -1,8 +1,15 @@
 const { Resend } = require('resend');
 const QRCode = require('qrcode');
+const { v2: cloudinary } = require('cloudinary');
 const approvalEmailTemplate = require('../templates/approvalEmail');
 const rejectionEmailTemplate = require('../templates/rejectionEmail');
 const submissionEmailTemplate = require('../templates/submissionEmail');
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 class EmailService {
   constructor() {
@@ -26,8 +33,8 @@ class EmailService {
     }
 
     try {
-      // Generate the QR Code directly on the server as an image buffer
-      const qrBuffer = await QRCode.toBuffer(participant.registrationId.toString(), {
+      // Generate the QR Code directly on the server as a base64 string
+      const qrBase64 = await QRCode.toDataURL(participant.registrationId.toString(), {
         width: 300,
         margin: 2,
         color: {
@@ -35,24 +42,25 @@ class EmailService {
           light: '#FFFFFF'
         }
       });
+      
+      // Upload to Cloudinary to get a permanent, trusted image URL that Gmail won't block
+      const uploadResponse = await cloudinary.uploader.upload(qrBase64, {
+        folder: 'qrcodes',
+        public_id: participant.registrationId
+      });
 
       const htmlContent = approvalEmailTemplate({
         name: participant.name,
         registrationId: participant.registrationId,
-        passType: participant.passType
+        passType: participant.passType,
+        qrCode: uploadResponse.secure_url
       });
 
       const { data, error } = await this.resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'BBB 2026 <onboarding@resend.dev>',
         to: participant.email,
         subject: '🎉 BBB 2026 Registration Approved',
-        html: htmlContent,
-        attachments: [
-          {
-            filename: 'BBB_2026_Royal_Ticket.png',
-            content: qrBuffer
-          }
-        ]
+        html: htmlContent
       });
 
       if (error) {

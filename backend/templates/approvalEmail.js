@@ -31,8 +31,8 @@ const approvalEmailTemplate = (data) => {
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <p style="color: #FADB5F; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">✦ Your Ticket is Attached ✦</p>
-          <p style="color: #FFFFFF; font-size: 14px;">Your official Royal QR Code has been securely attached to this email as an image file. Please download it and save it to your phone.</p>
+          <p style="color: #FADB5F; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Your Royal QR Code</p>
+          <img src="${data.qrCode}" alt="QR Code" width="256" height="256" style="border: 3px solid #FADB5F; padding: 10px; background-color: #ffffff; border-radius: 8px;" />
         </div>
 
         <div style="background-color: #8C182F; padding: 15px; border-radius: 8px; font-size: 14px; border-left: 4px solid #FADB5F;">
