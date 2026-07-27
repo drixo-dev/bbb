@@ -67,7 +67,7 @@ connectDB().then(async () => {
     if (err.message && err.message.includes('file type')) {
       return res.status(400).json({ success: false, message: 'Invalid file type. Only JPG, PNG, and WEBP are allowed.' });
     }
-    res.status(500).json({ success: false, message: 'An unexpected server error occurred.' });
+    res.status(500).json({ success: false, message: `An unexpected server error occurred: ${err.message || 'Unknown error'}` });
   });
 
   app.listen(PORT, () => {
