@@ -18,7 +18,7 @@ const altFrontendUrl = frontendUrl.includes('www.')
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || origin === frontendUrl || origin === altFrontendUrl || origin.startsWith('http://localhost:3000') || origin.endsWith('.vercel.app')) {
+    if (!origin || origin === frontendUrl || origin === altFrontendUrl || origin.startsWith('http://localhost:3000') || origin.endsWith('.vercel.app') || origin.endsWith('bandbaajabaarat.rocks')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
