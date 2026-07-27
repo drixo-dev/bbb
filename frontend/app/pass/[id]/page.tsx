@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Crown, Download, QrCode, CheckCircle, XCircle, Clock, User, Ticket } from 'lucide-react';
+import QRCode from 'qrcode';
 import { apiGetPass, Participant } from '@/lib/api';
 
 function PassContent() {
@@ -23,7 +24,6 @@ function PassContent() {
             setParticipant(res.participant);
             // Generate QR code for the pass
             try {
-              const QRCode = await import('qrcode');
               const url = await QRCode.toDataURL(
                 JSON.stringify({ registrationId: id, event: 'BBB2026', passType: res.participant.passType }),
                 { width: 200, margin: 2, color: { dark: '#3B0811', light: '#F8F3EB' } }
