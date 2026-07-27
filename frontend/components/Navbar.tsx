@@ -32,9 +32,10 @@ export default function Navbar() {
   ];
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-        scrolled
+    <>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
+        scrolled || mobileMenuOpen
           ? 'bg-maroon-900/95 backdrop-blur-md border-b border-gold-antique/40 py-3 shadow-gold-glow'
           : 'bg-transparent py-5'
       }`}
@@ -96,7 +97,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-maroon-900/98 border-b border-gold-antique/40 px-6 py-6 space-y-4">
+        <div className="md:hidden bg-maroon-900/95 border-b border-gold-antique/40 px-6 py-6 space-y-4">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -126,11 +127,12 @@ export default function Navbar() {
           </Link>
         </div>
       )}
+      </nav>
 
       <ResumeRegistrationModal 
         isOpen={isResumeModalOpen} 
         onClose={() => setIsResumeModalOpen(false)} 
       />
-    </nav>
+    </>
   );
 }
