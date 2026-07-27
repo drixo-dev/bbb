@@ -59,8 +59,14 @@ class EmailService {
       const { data, error } = await this.resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'BBB 2026 <onboarding@resend.dev>',
         to: participant.email,
-        subject: '🎉 BBB 2026 Registration Approved',
-        html: htmlContent
+        subject: '🎉 BBB 2026 Registration Approved!',
+        html: htmlContent,
+        attachments: [
+          {
+            filename: `BBB26-QR-${participant.registrationId}.png`,
+            content: qrBase64.split(',')[1],
+          }
+        ]
       });
 
       if (error) {
