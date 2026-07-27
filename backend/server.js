@@ -17,11 +17,13 @@ const altFrontendUrl = frontendUrl.includes('www.')
   : frontendUrl.replace('https://', 'https://www.');
 
 app.use(cors({
-  origin: [
-    frontendUrl,
-    altFrontendUrl,
-    'http://localhost:3000'
-  ],
+  origin: function (origin, callback) {
+    if (!origin || origin === frontendUrl || origin === altFrontendUrl || origin.startsWith('http://localhost:3000') || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
