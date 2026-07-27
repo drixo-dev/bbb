@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Crown, LayoutDashboard, Users, DollarSign, Clock, CheckCircle, XCircle,
-  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck
+  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail
 } from 'lucide-react';
 import {
   apiAdminLogin, apiAdminGetStats, apiAdminGetParticipants,
   apiAdminUpdateStatus, apiAdminDeleteParticipant, getExportCSVUrl,
-  apiAdminVerifyPass, Participant
+  apiAdminVerifyPass, Participant, apiAdminEditParticipant, apiAdminResendEmail
 } from '@/lib/api';
 
 export default function AdminPage() {
@@ -46,6 +46,10 @@ export default function AdminPage() {
   // Rejection Modal
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReasonText, setRejectReasonText] = useState<string>('');
+
+  // Editing Participant
+  const [editingParticipant, setEditingParticipant] = useState<Participant | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', rollNumber: '' });
 
   // Check token in sessionStorage on mount
   useEffect(() => {
@@ -137,6 +141,28 @@ export default function AdminPage() {
     if (!confirm(`Delete registration ${registrationId}? This cannot be undone.`)) return;
     const res = await apiAdminDeleteParticipant(token, registrationId);
     if (res.success) fetchData();
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingParticipant) return;
+    const res = await apiAdminEditParticipant(token, editingParticipant.registrationId, editForm);
+    if (res.success) {
+      setEditingParticipant(null);
+      fetchData();
+    } else {
+      alert(res.message || 'Error updating participant');
+    }
+  };
+
+  const handleResendEmail = async (registrationId: string) => {
+    if (!confirm('Resend approval email to this participant?')) return;
+    const res = await apiAdminResendEmail(token, registrationId);
+    if (res.success) {
+      alert('Email sent successfully!');
+    } else {
+      alert(res.message || 'Failed to resend email.');
+    }
   };
 
   const handleQRVerify = async () => {
@@ -427,14 +453,35 @@ export default function AdminPage() {
                           >
                             <XCircle className="w-3.5 h-3.5" />
                           </button>
-                          <Link
-                            href={`/pass/${p.registrationId}`}
-                            target="_blank"
-                            className="p-1.5 rounded-lg bg-purple-900/40 border border-purple-500/40 text-purple-400 hover:bg-purple-800/60 transition-all"
-                            title="View E-Pass"
+                          <button
+                            onClick={() => {
+                              setEditingParticipant(p);
+                              setEditForm({ name: p.name, email: p.email, phone: p.phone, rollNumber: p.rollNumber });
+                            }}
+                            className="p-1.5 rounded-lg bg-blue-900/40 border border-blue-500/40 text-blue-400 hover:bg-blue-800/60 transition-all"
+                            title="Edit Participant"
                           >
-                            <QrCode className="w-3.5 h-3.5" />
-                          </Link>
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          {p.paymentStatus === 'Approved' && (
+                            <>
+                              <Link
+                                href={`/pass/${p.registrationId}`}
+                                target="_blank"
+                                className="p-1.5 rounded-lg bg-purple-900/40 border border-purple-500/40 text-purple-400 hover:bg-purple-800/60 transition-all"
+                                title="View E-Pass"
+                              >
+                                <QrCode className="w-3.5 h-3.5" />
+                              </Link>
+                              <button
+                                onClick={() => handleResendEmail(p.registrationId)}
+                                className="p-1.5 rounded-lg bg-indigo-900/40 border border-indigo-500/40 text-indigo-400 hover:bg-indigo-800/60 transition-all"
+                                title="Resend Approval Email"
+                              >
+                                <Mail className="w-3.5 h-3.5" />
+                              </button>
+                            </>
+                          )}
                           <button
                             onClick={() => handleDelete(p.registrationId)}
                             className="p-1.5 rounded-lg bg-red-950/60 border border-red-900/60 text-red-600 hover:bg-red-900/40 transition-all"
@@ -494,6 +541,72 @@ export default function AdminPage() {
                 Confirm Rejection
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Participant Modal */}
+      {editingParticipant && (
+        <div className="fixed inset-0 z-50 bg-maroon-950/95 flex items-center justify-center p-4">
+          <div className="relative max-w-lg w-full box-gold-frame rounded-2xl overflow-hidden bg-maroon-900 p-6">
+            <h3 className="text-xl font-bold text-gold-gradient mb-4">Edit Participant</h3>
+            <form onSubmit={handleEditSubmit} className="space-y-4 font-poppins text-sm">
+              <div>
+                <label className="block text-gold-antique/80 mb-1 text-xs">Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne"
+                />
+              </div>
+              <div>
+                <label className="block text-gold-antique/80 mb-1 text-xs">Email</label>
+                <input
+                  type="email"
+                  required
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne"
+                />
+              </div>
+              <div>
+                <label className="block text-gold-antique/80 mb-1 text-xs">Phone</label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne"
+                />
+              </div>
+              <div>
+                <label className="block text-gold-antique/80 mb-1 text-xs">Roll Number</label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.rollNumber}
+                  onChange={(e) => setEditForm({ ...editForm, rollNumber: e.target.value })}
+                  className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne"
+                />
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setEditingParticipant(null)}
+                  className="px-4 py-2 rounded-xl border border-gold-antique/30 text-gold-champagne hover:bg-gold-antique/10 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-bold hover:scale-105 transition-all shadow-gold-glow"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

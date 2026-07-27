@@ -146,6 +146,14 @@ export async function apiAdminVerifyPass(token: string, registrationId: string) 
   return res.json();
 }
 
+export async function apiAdminResendEmail(token: string, registrationId: string) {
+  const res = await fetch(`${API_BASE_URL}/admin/resend-approval-email/${registrationId}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
 export function getExportCSVUrl(token: string) {
   return `${API_BASE_URL}/admin/export-csv?token=${token}`;
 }
