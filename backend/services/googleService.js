@@ -31,18 +31,18 @@ class GoogleService {
         );
         this.sheets = google.sheets({ version: 'v4', auth: this.auth });
         this.drive = google.drive({ version: 'v3', auth: this.auth });
-        console.log('✅ Google Sheets & Drive API initialized successfully.');
+
       } catch (err) {
         console.warn('⚠️ Google Auth initialization error:', err.message);
       }
     } else {
-      console.log('ℹ️ Google Sheets / Drive API credentials not provided in .env. Running with local database storage.');
+
     }
   }
 
   async appendToSheet(participant) {
     if (!this.sheets || !this.sheetsId) {
-      console.log(`[Local Sync Only] Sheet Append Mock: ${participant.registrationId} - ${participant.name}`);
+
       return false;
     }
 
@@ -77,7 +77,7 @@ class GoogleService {
         }
       });
 
-      console.log(`✅ Participant ${participant.registrationId} appended to Google Sheet.`);
+
       return true;
     } catch (err) {
       console.error('❌ Error appending to Google Sheet:', err.message);
@@ -87,7 +87,7 @@ class GoogleService {
 
   async uploadToDrive(filePath, originalFilename) {
     if (!this.drive || !this.driveFolderId) {
-      console.log(`[Local Upload Only] Drive Upload Mock for file: ${originalFilename}`);
+
       return null;
     }
 
@@ -116,7 +116,7 @@ class GoogleService {
         }
       });
 
-      console.log(`✅ Uploaded file to Google Drive: ${response.data.webViewLink}`);
+
       return response.data.webViewLink;
     } catch (err) {
       console.error('❌ Error uploading to Google Drive:', err.message);

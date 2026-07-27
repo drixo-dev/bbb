@@ -13,9 +13,9 @@ class EmailService {
   init() {
     if (process.env.RESEND_API_KEY) {
       this.resend = new Resend(process.env.RESEND_API_KEY);
-      console.log('✅ Resend service initialized.');
+
     } else {
-      console.log('ℹ️ RESEND_API_KEY not found in .env.');
+
     }
   }
 
@@ -48,7 +48,7 @@ class EmailService {
         return { success: false, error: error.message };
       }
       
-      console.log(`✅ Approval email sent successfully to ${participant.email}`);
+
       return { success: true };
 
     } catch (err) {
@@ -81,7 +81,7 @@ class EmailService {
         return { success: false, error: error.message };
       }
       
-      console.log(`✅ Rejection email sent successfully to ${participant.email}`);
+
       return { success: true };
 
     } catch (err) {
@@ -115,7 +115,7 @@ class EmailService {
         return { success: false, error: error.message };
       }
       
-      console.log(`✅ Submission email sent successfully to ${participant.email}`);
+
       return { success: true };
 
     } catch (err) {

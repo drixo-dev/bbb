@@ -51,7 +51,7 @@ const collectPass = async (req, res) => {
       }
     }
 
-    console.log(`[AUDIT] Pass Collected - Registration: ${registrationId} | By Admin ID: ${req.admin.id} | Time: ${new Date().toISOString()}`);
+
 
     return res.status(200).json({
       success: true,

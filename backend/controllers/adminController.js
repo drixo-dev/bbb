@@ -167,7 +167,7 @@ const updateStatus = async (req, res) => {
 
     let emailStatus = null;
     if (paymentStatus === 'Approved') {
-      console.log(`[AUDIT] Payment Approved - Registration: ${registrationId} | By: ${req.admin ? req.admin.id : 'System'} | Time: ${new Date().toISOString()}`);
+
       emailStatus = await emailService.sendApprovalEmail(updated);
       
       if (emailStatus && emailStatus.success) {
@@ -176,7 +176,7 @@ const updateStatus = async (req, res) => {
         await updated.save();
       }
     } else if (paymentStatus === 'Rejected') {
-      console.log(`[AUDIT] Payment Rejected - Registration: ${registrationId} | Reason: ${rejectionReason} | By: ${req.admin ? req.admin.id : 'System'} | Time: ${new Date().toISOString()}`);
+
       await emailService.sendRejectionEmail(updated);
     }
 
