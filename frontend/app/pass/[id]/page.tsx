@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Crown, Download, QrCode, CheckCircle, XCircle, Clock, User, Ticket } from 'lucide-react';
+import { Download, QrCode, CheckCircle, XCircle, Clock, User, Ticket } from 'lucide-react';
 import QRCode from 'qrcode';
 import { apiGetPass, Participant } from '@/lib/api';
 
@@ -105,7 +105,7 @@ function PassContent() {
           {/* Header Band */}
           <div className="bg-gradient-to-r from-maroon-900 via-maroon-700 to-maroon-900 p-5 text-center border-b border-gold-antique/50">
             <div className="flex items-center justify-center gap-2 mb-1">
-              <Crown className="w-6 h-6 text-gold-champagne" />
+              <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain object-contain text-gold-champagne" />
             </div>
             <h2 className="font-cinzel text-xl font-bold text-gold-gradient tracking-wider">
               BAND BAAJA BAARAT

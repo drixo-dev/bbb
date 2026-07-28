@@ -9,7 +9,7 @@ export default function NotFound() {
 
       <div className="relative z-10 text-center max-w-lg mx-auto flex flex-col items-center">
         <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-gold-antique to-gold-champagne flex items-center justify-center text-maroon-900 shadow-gold-glow mb-8 animate-float">
-          <Crown className="w-10 h-10" />
+          <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain" />
         </div>
         
         <h1 className="font-cinzel text-8xl font-bold text-gold-gradient mb-4 drop-shadow-lg">

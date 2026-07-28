@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Crown, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import ResumeRegistrationModal from './ResumeRegistrationModal';
 
 export default function Navbar() {
@@ -43,9 +43,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Royal Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gold-antique to-gold-champagne flex items-center justify-center text-maroon-900 shadow-gold-glow group-hover:scale-105 transition-transform">
-            <Crown className="w-6 h-6" />
-          </div>
+          <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain object-contain group-hover:scale-105 transition-transform" />
           <div className="flex flex-col">
             <span className="font-cinzel font-bold text-lg sm:text-xl text-gold-gradient tracking-wider">
               BAND BAAJA BAARAT

@@ -2,16 +2,16 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Check, Crown, Sparkles, Star } from 'lucide-react';
+import { Check, Sparkles, Star } from 'lucide-react';
 
 export default function PassCards() {
   const passes = [
     {
       id: 'Single',
-      name: 'Single Pass',
+      name: 'Early Bird Pass',
       tagline: 'Individual Royal Entry',
-      price: 499,
-      originalPrice: 699,
+      price: 950,
+      originalPrice: 1200,
       popular: false,
       benefits: [
         'Single Entry to Band Baaja Baarat 2026',
@@ -19,38 +19,6 @@ export default function PassCards() {
         'Full Multi-Course Royal Banquet Dinner',
         'Access to Live DJ & Cultural Stage Shows',
         'Digital QR E-Pass & Physical Badge'
-      ]
-    },
-    {
-      id: 'Couple',
-      name: 'Couple Pass',
-      tagline: 'Entry for 2 Baaratis',
-      price: 899,
-      originalPrice: 1199,
-      popular: true,
-      benefits: [
-        'Entry for 2 People (Couple / Duo)',
-        'VIP Red Carpet Welcome & Photo Booth Access',
-        'Full Multi-Course Royal Banquet Dinner for 2',
-        'Front-Row Stage Access & Couple Dance Floor',
-        'Eligible for Best Dressed Couple Awards',
-        'Digital QR E-Passes for Both Members'
-      ]
-    },
-    {
-      id: 'Group',
-      name: 'Group Pass (4 People)',
-      tagline: 'Squad Entry for 4 Friends',
-      price: 1599,
-      originalPrice: 1999,
-      popular: false,
-      benefits: [
-        'Entry for 4 Friends in a Single Pass',
-        'Reserved Squad Table & Welcome Drinks',
-        'Full Multi-Course Royal Banquet Dinner for 4',
-        'Complimentary Souvenir Photo Frame',
-        'Exclusive Squad Dance Floor Access',
-        'Digital QR E-Passes for All 4 Members'
       ]
     }
   ];
@@ -66,24 +34,30 @@ export default function PassCards() {
             ROYAL PASS TIERS
           </h2>
           <p className="font-poppins text-sm text-royal-ivory/80 max-w-xl mx-auto">
-            Choose the perfect pass for you, your partner, or your entire squad. Limited passes available!
+            Secure your Early Bird Pass before they run out! Limited passes available.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 max-w-sm mx-auto gap-8">
           {passes.map((pass) => (
             <div
               key={pass.id}
-              className={`box-gold-frame rounded-3xl p-8 bg-maroon-800/90 relative flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 ${
-                pass.popular
+              className={`box-gold-frame [&::before]:rounded-[20px] rounded-3xl p-8 bg-maroon-800/90 relative flex flex-col justify-between transition-all duration-300 ${
+                pass.locked ? 'opacity-90 grayscale-[50%] pointer-events-none' : 'hover:-translate-y-2'
+              } ${
+                pass.popular && !pass.locked
                   ? 'border-2 border-gold-champagne shadow-gold-intense bg-gradient-to-b from-maroon-800 to-maroon-900 scale-105 z-10'
-                  : 'hover:shadow-gold-glow'
+                  : !pass.locked ? 'hover:shadow-gold-glow' : ''
               }`}
             >
-              <div className="corner-ornament corner-tl" />
-              <div className="corner-ornament corner-tr" />
-              <div className="corner-ornament corner-bl" />
-              <div className="corner-ornament corner-br" />
+              {pass.locked && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center rounded-3xl bg-maroon-950/60 backdrop-blur-sm">
+                   <div className="px-6 py-3 rounded-full bg-maroon-900 border border-gold-champagne text-gold-champagne font-marcellus font-bold tracking-widest text-sm shadow-gold-glow rotate-[-5deg]">
+                     OPENS IN PHASE 1
+                   </div>
+                </div>
+              )}
+
 
               {/* Popular Ribbon */}
               {pass.popular && (
@@ -94,8 +68,8 @@ export default function PassCards() {
               )}
 
               <div>
-                <div className="text-center pb-6 border-b border-gold-antique/30">
-                  <Crown className="w-8 h-8 text-gold-champagne mx-auto mb-2" />
+                <div className="text-center pb-8">
+                  <img src="/logo.png" alt="Logo" className="w-24 h-24 object-contain object-contain text-gold-champagne mx-auto mb-2" />
                   <h3 className="font-cinzel text-2xl font-bold text-gold-gradient mb-1">
                     {pass.name}
                   </h3>
@@ -112,18 +86,6 @@ export default function PassCards() {
                     </span>
                   </div>
                 </div>
-
-                {/* Benefits List */}
-                <ul className="py-6 space-y-3.5">
-                  {pass.benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-start gap-3 font-poppins text-xs sm:text-sm text-royal-ivory/90">
-                      <div className="w-4 h-4 rounded-full bg-gold-antique/20 border border-gold-antique flex items-center justify-center text-gold-champagne shrink-0 mt-0.5">
-                        <Check className="w-3 h-3" />
-                      </div>
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
 
               {/* Book Pass CTA */}

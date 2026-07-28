@@ -25,7 +25,7 @@ export default function FAQ() {
     },
     {
       q: "What is the expected dress code?",
-      a: "The dress code is Traditional Royal Indian. Gentlemen are encouraged to wear Sherwanis, Kurtas, or Blazers. Ladies can wear Sarees, Lehengas, or Anarkalis!"
+      a: "The dress code is Traditional Royal Indian. Come dressed in your finest ethnic wear!"
     }
   ];
 

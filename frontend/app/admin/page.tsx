@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Crown, LayoutDashboard, Users, DollarSign, Clock, CheckCircle, XCircle,
+  LayoutDashboard, Users, DollarSign, Clock, CheckCircle, XCircle,
   Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail, UserPlus, FileText
 } from 'lucide-react';
 import {
@@ -210,7 +210,7 @@ export default function AdminPage() {
           <div className="corner-ornament corner-bl" />
           <div className="corner-ornament corner-br" />
 
-          <Crown className="w-12 h-12 text-gold-champagne mx-auto mb-3 animate-float" />
+          <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain text-gold-champagne mx-auto mb-3 animate-float" />
           <h1 className="font-cinzel text-2xl sm:text-3xl font-bold text-gold-gradient mb-1">
             ADMIN DASHBOARD
           </h1>
@@ -271,7 +271,7 @@ export default function AdminPage() {
       {/* Admin Header Bar */}
       <div className="bg-maroon-900 border-b border-gold-antique/40 px-4 sm:px-6 py-4 flex items-center justify-between shadow-gold-glow sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
-          <Crown className="w-8 h-8 text-gold-champagne" />
+          <img src="/logo.png" alt="Logo" className="w-24 h-24 object-contain object-contain text-gold-champagne" />
           <div>
             <span className="font-cinzel font-bold text-lg text-gold-gradient block">BBB 2026 Admin</span>
             <span className="font-poppins text-[10px] text-gold-champagne/60">Royal Dashboard Panel</span>

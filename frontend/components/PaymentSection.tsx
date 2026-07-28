@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Crown, QrCode, Upload, CheckCircle2, ShieldCheck, Copy, ArrowRight } from 'lucide-react';
+import { QrCode, Upload, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { apiGetPass, apiSubmitPayment, Participant } from '@/lib/api';
 
 
@@ -18,7 +18,7 @@ export default function PaymentSection() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [copied, setCopied] = useState(false);
+
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'CASH'>('UPI');
 
   useEffect(() => {
@@ -47,11 +47,7 @@ export default function PaymentSection() {
     }
   };
 
-  const copyUPI = () => {
-    navigator.clipboard.writeText('bbb2026@upi');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,7 +108,7 @@ export default function PaymentSection() {
       <div className="corner-ornament corner-br" />
 
       <div className="text-center mb-8">
-        <Crown className="w-10 h-10 text-gold-champagne mx-auto mb-2 animate-float" />
+        <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain text-gold-champagne mx-auto mb-2 animate-float" />
         <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-gold-gradient mb-1">
           ROYAL PAYMENT GATEWAY
         </h2>
@@ -159,50 +155,10 @@ export default function PaymentSection() {
 
               {/* QR Code Graphic Box */}
               <div className="relative w-48 h-48 mx-auto bg-white p-3 rounded-2xl border-4 border-gold-antique shadow-gold-glow flex items-center justify-center">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  {/* Decorative QR Lines */}
-                  <rect x="5" y="5" width="30" height="30" fill="#3B0811" />
-                  <rect x="10" y="10" width="20" height="20" fill="#FFFFFF" />
-                  <rect x="14" y="14" width="12" height="12" fill="#D4AF37" />
-
-                  <rect x="65" y="5" width="30" height="30" fill="#3B0811" />
-                  <rect x="70" y="10" width="20" height="20" fill="#FFFFFF" />
-                  <rect x="74" y="14" width="12" height="12" fill="#D4AF37" />
-
-                  <rect x="5" y="65" width="30" height="30" fill="#3B0811" />
-                  <rect x="10" y="70" width="20" height="20" fill="#FFFFFF" />
-                  <rect x="14" y="74" width="12" height="12" fill="#D4AF37" />
-
-                  {/* Random QR pattern fill */}
-                  <rect x="40" y="10" width="10" height="10" fill="#3B0811" />
-                  <rect x="45" y="25" width="15" height="10" fill="#6E1529" />
-                  <rect x="10" y="40" width="15" height="15" fill="#3B0811" />
-                  <rect x="35" y="40" width="25" height="25" fill="#D4AF37" />
-                  <rect x="70" y="45" width="20" height="15" fill="#3B0811" />
-                  <rect x="45" y="70" width="15" height="20" fill="#6E1529" />
-                  <rect x="70" y="75" width="15" height="15" fill="#D4AF37" />
-                </svg>
-
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-10 h-10 rounded-full bg-maroon-900 border-2 border-gold-antique flex items-center justify-center text-gold-champagne font-cinzel font-bold text-xs">
-                    BBB
-                  </div>
-                </div>
+                <img src="/qr-code.png" alt="Payment QR Code" className="w-full h-full object-contain rounded-lg" />
               </div>
 
-              {/* UPI ID Info */}
-              <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-maroon-800 border border-gold-antique/40 text-xs font-poppins text-gold-champagne">
-                <span>UPI VPA: <strong>bbb2026@upi</strong></span>
-                <button
-                  type="button"
-                  onClick={copyUPI}
-                  className="p-1 text-gold-antique hover:text-white transition-colors"
-                  title="Copy UPI VPA"
-                >
-                  <Copy className="w-4 h-4" />
-                </button>
-                {copied && <span className="text-emerald-400 font-bold text-[10px]">Copied!</span>}
-              </div>
+
             </div>
           </div>
 

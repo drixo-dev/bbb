@@ -9,39 +9,39 @@ export default function Gallery() {
 
   const images = [
     {
-      src: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80",
+      src: "/images/uploaded/img-1.jpg",
       title: "Royal Stage Performance",
       category: "Dancers & Shehnai"
     },
     {
-      src: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80",
+      src: "/images/uploaded/img-2.jpg",
       title: "Grand Baarat Procession",
       category: "Celebrations"
     },
     {
-      src: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80",
+      src: "/images/uploaded/ethnic.jpg",
       title: "Ethnic Fashion Gala",
       category: "Royalty"
     },
     {
-      src: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+      src: "/images/uploaded/img-4.jpg",
       title: "DJ Dance Floor Fever",
       category: "High Energy"
     },
     {
-      src: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=800&q=80",
+      src: "/images/uploaded/gallery-img-5.jpeg",
       title: "Feast & Festive Delicacies",
       category: "Banquet"
     },
     {
-      src: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80",
+      src: "/images/uploaded/img-6-v2.jpg",
       title: "Crown & Title Ceremony",
       category: "Awards"
     }
   ];
 
   return (
-    <section id="gallery" className="py-20 px-4 relative bg-maroon-800/60 royal-damask-bg">
+    <section id="gallery" className="py-20 px-4 relative bg-maroon-950 royal-damask-bg">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <p className="font-marcellus text-xs sm:text-sm tracking-[0.3em] text-gold-antique uppercase mb-2">
@@ -65,24 +65,15 @@ export default function Gallery() {
             >
               <Image
                 src={item.src}
-                alt={item.title}
+                alt="Gallery Photo"
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-maroon-900 via-maroon-900/40 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
-
-              {/* Overlay Content */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
-                <div>
-                  <span className="font-marcellus text-[10px] text-gold-champagne uppercase tracking-widest block mb-1">
-                    {item.category}
-                  </span>
-                  <h3 className="font-cinzel text-lg font-bold text-royal-ivory group-hover:text-gold-bright transition-colors">
-                    {item.title}
-                  </h3>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-gold-antique/20 border border-gold-antique flex items-center justify-center text-gold-champagne group-hover:scale-110 transition-transform">
-                  <Maximize2 className="w-4 h-4" />
+              
+              {/* Subtle hover overlay for the expand icon */}
+              <div className="absolute inset-0 bg-maroon-900/0 group-hover:bg-maroon-900/30 transition-colors duration-300 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-maroon-950/60 border border-gold-antique text-gold-champagne flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 backdrop-blur-sm">
+                  <Maximize2 className="w-5 h-5" />
                 </div>
               </div>
             </div>

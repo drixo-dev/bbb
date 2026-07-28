@@ -9,11 +9,19 @@ module.exports = {
     extend: {
       colors: {
         maroon: {
-          900: "#3B0811",
-          800: "#4A0B17",
-          700: "#5D0F1D",
-          600: "#6E1529",
-          500: "#8B1E34",
+          950: "#150006",
+          900: "#2A000D",
+          800: "#400014",
+          700: "#5C001C",
+          600: "#780025",
+          500: "#9C0030",
+        },
+        emerald: {
+          900: "#022B1A",
+          800: "#03472C",
+          700: "#046942",
+          600: "#068F5A",
+          500: "#08B874",
         },
         gold: {
           antique: "#D4AF37",
@@ -26,7 +34,7 @@ module.exports = {
           ivory: "#F8F3EB",
           cream: "#FFF5E6",
           orange: "#D97706",
-          card: "#4A0B17",
+          card: "#400014",
         }
       },
       fontFamily: {
@@ -44,8 +52,8 @@ module.exports = {
       backgroundImage: {
         'gold-foil': 'linear-gradient(135deg, #D4AF37 0%, #FFF5E6 50%, #D4AF37 100%)',
         'gold-foil-soft': 'linear-gradient(135deg, #E8C96B 0%, #F3E5AB 50%, #D4AF37 100%)',
-        'royal-maroon-gradient': 'radial-gradient(circle at center, #6E1529 0%, #5D0F1D 60%, #3B0811 100%)',
-        'royal-card-gradient': 'linear-gradient(180deg, rgba(110, 21, 41, 0.95) 0%, rgba(61, 9, 21, 0.98) 100%)',
+        'royal-maroon-gradient': 'radial-gradient(circle at center, #780025 0%, #5C001C 60%, #2A000D 100%)',
+        'royal-card-gradient': 'linear-gradient(180deg, rgba(120, 0, 37, 0.95) 0%, rgba(42, 0, 13, 0.98) 100%)',
       },
       keyframes: {
         sway: {

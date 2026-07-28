@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Crown, Sparkles, User, Mail, Phone, GraduationCap, Users, ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Sparkles, User, Mail, Phone, GraduationCap, Users, ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react';
 import { apiRegister, Member } from '@/lib/api';
 import ResumeRegistrationModal from './ResumeRegistrationModal';
 
@@ -10,7 +10,8 @@ export default function RegistrationForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const initialPass = searchParams?.get('pass') || 'Single Pass';
+  const urlPass = searchParams?.get('pass');
+  const initialPass = urlPass === 'Early Bird Pass' ? 'Single Pass' : (urlPass || 'Single Pass');
   const editRegId = searchParams?.get('edit');
   const [isEditMode, setIsEditMode] = useState(!!editRegId);
 
@@ -35,7 +36,8 @@ export default function RegistrationForm() {
 
   useEffect(() => {
     if (searchParams?.get('pass')) {
-      setPassType(searchParams.get('pass') || 'Single Pass');
+      const p = searchParams.get('pass');
+      setPassType(p === 'Early Bird Pass' ? 'Single Pass' : (p || 'Single Pass'));
     }
   }, [searchParams]);
 
@@ -152,7 +154,7 @@ export default function RegistrationForm() {
       <div className="corner-ornament corner-br" />
 
       <div className="text-center mb-8">
-        <Crown className="w-10 h-10 text-gold-champagne mx-auto mb-2 animate-float" />
+        <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain text-gold-champagne mx-auto mb-2 animate-float" />
         <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-gold-gradient mb-1">
           {isEditMode ? 'EDIT REGISTRATION' : 'BAARATI REGISTRATION'}
         </h2>
@@ -182,18 +184,16 @@ export default function RegistrationForm() {
           <label className="font-marcellus text-sm font-bold text-gold-champagne block mb-2 uppercase tracking-wider">
             Select Pass Category *
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 max-w-xs gap-3">
             {[
-              { label: 'Single Pass', price: '₹499' },
-              { label: 'Couple Pass', price: '₹899' },
-              { label: 'Group Pass (4 People)', price: '₹1599' }
+              { label: 'Early Bird Pass', value: 'Single Pass', price: '₹950' }
             ].map((p) => (
               <button
-                key={p.label}
+                key={p.value}
                 type="button"
-                onClick={() => setPassType(p.label)}
+                onClick={() => setPassType(p.value)}
                 className={`p-3.5 rounded-2xl border text-left font-marcellus text-xs sm:text-sm transition-all duration-300 flex flex-col justify-between ${
-                  passType === p.label
+                  passType === p.value
                     ? 'bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 border-gold-champagne shadow-gold-glow font-bold scale-[1.02]'
                     : 'bg-maroon-900/60 text-royal-ivory border-gold-antique/30 hover:border-gold-antique'
                 }`}

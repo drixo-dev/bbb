@@ -5,10 +5,10 @@
 @tailwind utilities;
 
 :root {
-  --maroon-deep: #3B0811;
-  --maroon-dark: #4A0B17;
-  --maroon-velvet: #5D0F1D;
-  --maroon-burgundy: #6E1529;
+  --maroon-deep: #2A000D;
+  --maroon-dark: #400014;
+  --maroon-velvet: #5C001C;
+  --maroon-burgundy: #780025;
   --gold-antique: #D4AF37;
   --gold-champagne: #E8C96B;
   --ivory: #F8F3EB;
@@ -28,8 +28,8 @@ body {
 
 /* Custom Damask Overlay Texture */
 .royal-damask-bg {
-  background-color: #5D0F1D;
-  background-image: radial-gradient(#6E1529 1.5px, transparent 1.5px), radial-gradient(#3B0811 1.5px, #5D0F1D 1.5px);
+  background-color: #2A000D;
+  background-image: radial-gradient(#400014 1.5px, transparent 1.5px), radial-gradient(#150006 1.5px, #2A000D 1.5px);
   background-size: 60px 60px;
   background-position: 0 0, 30px 30px;
 }
@@ -56,7 +56,7 @@ body {
 .box-gold-frame {
   position: relative;
   border: 2px solid #D4AF37;
-  background: linear-gradient(180deg, rgba(110, 21, 41, 0.9) 0%, rgba(61, 9, 21, 0.95) 100%);
+  background: linear-gradient(180deg, rgba(120, 0, 37, 0.9) 0%, rgba(42, 0, 13, 0.95) 100%);
   box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(212, 175, 55, 0.15);
 }
 
@@ -77,13 +77,13 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #3B0811;
+  background: #2A000D;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #D4AF37, #6E1529);
+  background: linear-gradient(180deg, #D4AF37, #780025);
   border-radius: 5px;
-  border: 2px solid #3B0811;
+  border: 2px solid #2A000D;
 }
 
 ::-webkit-scrollbar-thumb:hover {

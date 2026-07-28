@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Crown, Instagram, MessageCircle, Mail, Heart, ArrowUp } from 'lucide-react';
+import { Instagram, MessageCircle, Mail, Heart, ArrowUp } from 'lucide-react';
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -19,9 +19,7 @@ export default function Footer() {
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gold-antique to-gold-champagne flex items-center justify-center text-maroon-900 shadow-gold-glow">
-                <Crown className="w-6 h-6" />
-              </div>
+              <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain object-contain group-hover:scale-105 transition-transform" />
               <div>
                 <span className="font-cinzel font-bold text-xl text-gold-gradient tracking-wider block">
                   BAND BAAJA BAARAT
@@ -55,7 +53,7 @@ export default function Footer() {
                 <MessageCircle className="w-5 h-5" />
               </a>
               <a
-                href="mailto:contact@bandbaajabaarat2026.com"
+                href="mailto:inquiry.envisiongroup@gmail.com"
                 className="w-10 h-10 rounded-full bg-maroon-900 border border-gold-antique/50 flex items-center justify-center text-gold-champagne hover:scale-110 hover:bg-gold-antique hover:text-maroon-900 transition-all shadow-md"
               >
                 <Mail className="w-5 h-5" />
@@ -86,10 +84,11 @@ export default function Footer() {
               Grand Palace Auditorium, Campus Grounds
             </p>
             <p className="font-poppins text-xs text-gold-warm">
-              Helpline: +91 98765 43210
+              Helpline: +91 97233 48341<br/>
+              Helpline: +91 98982 82783
             </p>
             <p className="font-poppins text-xs text-gold-warm">
-              Email: help@bandbaajabaarat2026.com
+              Email: inquiry.envisiongroup@gmail.com
             </p>
           </div>
         </div>

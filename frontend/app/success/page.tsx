@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Crown, Sparkles, CheckCircle, Ticket, Share2 } from 'lucide-react';
+import { Sparkles, CheckCircle, Ticket, Share2 } from 'lucide-react';
 import { apiGetPass, Participant } from '@/lib/api';
 
 function SuccessContent() {
@@ -82,7 +82,7 @@ function SuccessContent() {
 
           {/* Animated Crown Icon */}
           <div className="relative inline-block mb-4">
-            <Crown className="w-14 h-14 text-gold-champagne animate-float mx-auto" />
+            <img src="/logo.png" alt="Logo" className="w-24 h-24 object-contain text-gold-champagne animate-float mx-auto" />
             <Sparkles className="absolute -top-1 -right-1 w-6 h-6 text-gold-antique animate-spin" />
           </div>
 
