@@ -25,14 +25,14 @@ export default function PassCards() {
   ];
 
   return (
-    <section id="passes" className="py-20 px-4 relative bg-maroon-900 border-t border-gold-antique/30">
+    <section id="passes" className="py-20 px-4 relative bg-maroon-950 border-t border-gold-antique/30">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <p className="font-marcellus text-xs sm:text-sm tracking-[0.3em] text-gold-antique uppercase mb-2">
             Select Your Baarati Pass
           </p>
           <h2 className="font-cinzel text-3xl sm:text-5xl font-bold text-gold-gradient mb-4">
-            ROYAL PASS TIERS
+            ROYAL PASS
           </h2>
           <p className="font-poppins text-sm text-royal-ivory/80 max-w-xl mx-auto">
             Secure your Early Bird Pass before they run out! Limited passes available.
@@ -43,11 +43,11 @@ export default function PassCards() {
           {passes.map((pass) => (
             <div
               key={pass.id}
-              className={`box-gold-frame [&::before]:rounded-[20px] rounded-3xl p-8 bg-maroon-800/90 relative flex flex-col justify-between transition-all duration-300 ${
+              className={`box-gold-frame [&::before]:rounded-[20px] rounded-3xl p-8 bg-maroon-900 relative flex flex-col justify-between transition-all duration-300 ${
                 pass.locked ? 'opacity-90 grayscale-[50%] pointer-events-none' : 'hover:-translate-y-2'
               } ${
                 pass.popular && !pass.locked
-                  ? 'border-2 border-gold-champagne shadow-gold-intense bg-gradient-to-b from-maroon-800 to-maroon-900 scale-105 z-10'
+                  ? 'border-2 border-gold-champagne shadow-gold-intense bg-gradient-to-b from-maroon-900 to-maroon-950 scale-105 z-10'
                   : !pass.locked ? 'hover:shadow-gold-glow' : ''
               }`}
             >
