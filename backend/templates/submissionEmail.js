@@ -31,7 +31,9 @@ const submissionEmailTemplate = (data) => {
         </div>
 
         <p style="font-size: 16px; color: #FFFFFF; text-align: center; line-height: 1.5;">
-          Our team will review your transaction soon. You will receive another email once your registration is officially approved.
+          ${data.isCash 
+            ? 'You have chosen to pay by Cash. Please make the payment to our team members. Once the payment is received and approved by the admin, you will receive another email with your QR code e-pass.' 
+            : 'Our team will review your transaction soon. You will receive another email with your QR code e-pass once your registration is officially approved.'}
         </p>
         
         <hr style="border: 0; height: 1px; background-color: #FADB5F; margin: 30px 0 20px 0;" />

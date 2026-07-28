@@ -126,7 +126,8 @@ class EmailService {
       const htmlContent = submissionEmailTemplate({
         name: participant.name,
         registrationId: participant.registrationId,
-        passType: participant.passType
+        passType: participant.passType,
+        isCash: participant.transactionId && participant.transactionId.startsWith('CASH-')
       });
 
       const { data, error } = await this.resend.emails.send({

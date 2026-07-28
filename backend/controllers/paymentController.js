@@ -21,7 +21,9 @@ const submitPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: `Payment already submitted. Current status: ${participant.paymentStatus}` });
     }
 
-    if (!req.file && !participant.screenshotUrl) {
+    const isCash = transactionId.trim().startsWith('CASH-');
+
+    if (!req.file && !participant.screenshotUrl && !isCash) {
       return res.status(400).json({ success: false, message: 'Payment screenshot is required.' });
     }
 

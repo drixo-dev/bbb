@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Crown, QrCode, Upload, CheckCircle2, ShieldCheck, Copy, ArrowRight } from 'lucide-react';
 import { apiGetPass, apiSubmitPayment, Participant } from '@/lib/api';
-import { compressImage } from '@/lib/imageCompression';
+
 
 export default function PaymentSection() {
   const router = useRouter();
@@ -19,6 +19,7 @@ export default function PaymentSection() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [copied, setCopied] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'CASH'>('UPI');
 
   useEffect(() => {
     if (regId) {
@@ -56,12 +57,12 @@ export default function PaymentSection() {
     e.preventDefault();
     setErrorMessage('');
 
-    if (!transactionId.trim()) {
+    if (paymentMethod === 'UPI' && !transactionId.trim()) {
       setErrorMessage('Please enter the 12-digit UPI Transaction ID / UTR Number.');
       return;
     }
 
-    if (!file && !participant?.screenshotUrl) {
+    if (paymentMethod === 'UPI' && !file && !participant?.screenshotUrl) {
       setErrorMessage('Please upload your payment screenshot image as proof.');
       return;
     }
@@ -71,11 +72,14 @@ export default function PaymentSection() {
     try {
       const formData = new FormData();
       formData.append('registrationId', regId || '');
-      formData.append('transactionId', transactionId);
-      if (file) {
-        setErrorMessage('Compressing image...');
-        const compressedFile = await compressImage(file);
-        formData.append('screenshot', compressedFile);
+      
+      if (paymentMethod === 'CASH') {
+        formData.append('transactionId', `CASH-${regId}`);
+      } else {
+        formData.append('transactionId', transactionId);
+        if (file) {
+          formData.append('screenshot', file);
+        }
       }
 
       const response = await apiSubmitPayment(formData);
@@ -240,54 +244,80 @@ export default function PaymentSection() {
                     Submit Payment Verification Details
                   </h3>
 
-                  <div>
-                    <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
-                      UPI Transaction ID / UTR Number * (12 Digits)
+                  <div className="flex gap-4 mb-4">
+                    <label className={`flex-1 p-3 rounded-xl border cursor-pointer text-center transition-colors ${paymentMethod === 'UPI' ? 'bg-maroon-800 border-gold-champagne text-gold-champagne' : 'bg-maroon-900/40 border-gold-antique/20 text-royal-ivory/60'}`}>
+                      <input type="radio" name="paymentMethod" value="UPI" checked={paymentMethod === 'UPI'} onChange={() => setPaymentMethod('UPI')} className="hidden" />
+                      <span className="font-marcellus text-sm font-bold tracking-wider">Pay via UPI</span>
                     </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. 429810982312"
-                      value={transactionId}
-                      onChange={(e) => setTransactionId(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm tracking-wider font-mono"
-                    />
-                    <p className="font-poppins text-[10px] text-gold-champagne/70 mt-1">
-                      Found in your GPay / PhonePe / Paytm payment status details
-                    </p>
+                    <label className={`flex-1 p-3 rounded-xl border cursor-pointer text-center transition-colors ${paymentMethod === 'CASH' ? 'bg-maroon-800 border-gold-champagne text-gold-champagne' : 'bg-maroon-900/40 border-gold-antique/20 text-royal-ivory/60'}`}>
+                      <input type="radio" name="paymentMethod" value="CASH" checked={paymentMethod === 'CASH'} onChange={() => setPaymentMethod('CASH')} className="hidden" />
+                      <span className="font-marcellus text-sm font-bold tracking-wider">Pay in Cash</span>
+                    </label>
                   </div>
 
-                  <div>
-                    <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
-                      Upload Payment Screenshot *
-                    </label>
-                    <div className="relative border-2 border-dashed border-gold-antique/40 rounded-2xl p-4 text-center bg-maroon-950/60 hover:border-gold-champagne transition-colors cursor-pointer group">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                      />
-                      {previewUrl ? (
-                        <div className="space-y-2">
-                          <img src={previewUrl} alt="Screenshot preview" className="max-h-32 mx-auto rounded-lg border border-gold-antique shadow-md" />
-                          <p className="font-poppins text-xs text-emerald-400 flex items-center justify-center gap-1">
-                            <CheckCircle2 className="w-4 h-4" /> Screenshot attached! Click to change.
-                          </p>
+                  {paymentMethod === 'UPI' && (
+                    <>
+                      <div>
+                        <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
+                          UPI Transaction ID / UTR Number * (12 Digits)
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. 429810982312"
+                          value={transactionId}
+                          onChange={(e) => setTransactionId(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl bg-maroon-900/60 border border-gold-antique/40 text-royal-ivory placeholder-royal-ivory/40 focus:border-gold-champagne focus:outline-none focus:ring-1 focus:ring-gold-champagne font-poppins text-sm tracking-wider font-mono"
+                        />
+                        <p className="font-poppins text-[10px] text-gold-champagne/70 mt-1">
+                          Found in your GPay / PhonePe / Paytm payment status details
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="font-poppins text-xs text-royal-ivory/80 block mb-1">
+                          Upload Payment Screenshot *
+                        </label>
+                        <div className="relative border-2 border-dashed border-gold-antique/40 rounded-2xl p-4 text-center bg-maroon-950/60 hover:border-gold-champagne transition-colors cursor-pointer group">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                          />
+                          {previewUrl ? (
+                            <div className="space-y-2">
+                              <img src={previewUrl} alt="Screenshot preview" className="max-h-32 mx-auto rounded-lg border border-gold-antique shadow-md" />
+                              <p className="font-poppins text-xs text-emerald-400 flex items-center justify-center gap-1">
+                                <CheckCircle2 className="w-4 h-4" /> Screenshot attached! Click to change.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2 py-3">
+                              <Upload className="w-8 h-8 text-gold-champagne mx-auto group-hover:scale-110 transition-transform" />
+                              <p className="font-marcellus text-xs text-gold-champagne">
+                                Click or Drag to Upload Payment Screenshot
+                              </p>
+                              <p className="font-poppins text-[10px] text-royal-ivory/50">
+                                Supports JPG, PNG, WebP up to 10MB
+                              </p>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className="space-y-2 py-3">
-                          <Upload className="w-8 h-8 text-gold-champagne mx-auto group-hover:scale-110 transition-transform" />
-                          <p className="font-marcellus text-xs text-gold-champagne">
-                            Click or Drag to Upload Payment Screenshot
-                          </p>
-                          <p className="font-poppins text-[10px] text-royal-ivory/50">
-                            Supports JPG, PNG, WebP up to 10MB
-                          </p>
-                        </div>
-                      )}
+                      </div>
+                    </>
+                  )}
+                  {paymentMethod === 'CASH' && (
+                    <div className="p-4 rounded-xl bg-maroon-800/50 border border-gold-antique/30 text-center">
+                      <p className="font-poppins text-sm text-royal-ivory/90 leading-relaxed">
+                        You have selected <strong>Cash Payment</strong>.
+                        <br/><br/>
+                        Please pay the total amount of <strong className="text-gold-champagne font-playfair text-lg">₹{participant.amount}</strong> to our registration team.
+                        <br/><br/>
+                        Once paid, your E-Pass QR code will be approved and sent to your email!
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <button

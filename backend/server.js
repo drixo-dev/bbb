@@ -18,7 +18,13 @@ const altFrontendUrl = frontendUrl.includes('www.')
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || origin === frontendUrl || origin === altFrontendUrl || origin.startsWith('http://localhost:3000') || origin.endsWith('.vercel.app') || origin.endsWith('bandbaajabaarat.rocks')) {
+    const allowedOrigins = [
+      'https://bandbaajabaarat.rocks',
+      'https://www.bandbaajabaarat.rocks',
+      frontendUrl,
+      altFrontendUrl
+    ];
+    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:') || origin.endsWith('.vercel.app') || origin.endsWith('bandbaajabaarat.rocks')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
