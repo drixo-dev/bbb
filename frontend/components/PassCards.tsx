@@ -13,6 +13,7 @@ export default function PassCards() {
       price: 950,
       originalPrice: 1200,
       popular: false,
+      locked: false,
       benefits: [
         'Single Entry to Band Baaja Baarat 2026',
         'Welcome Royal Tilak & Floral Shower',
