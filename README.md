@@ -3,7 +3,8 @@
 A premier, royal-wedding-styled college event registration system and dashboard. Designed with elegant aesthetics, traditional motifs, and modern robust functionality to manage passes, volunteers, and payments.
 
 ## Features
-- **Royal Themed UI/UX:** An immersive frontend with dark maroon and gold aesthetic, glassmorphism, and beautiful micro-animations.
+- **Ultra-Dark Royal Themed UI/UX:** An immersive frontend redesigned with a rich, ultra-dark royal maroon palette, accented by subtle emerald and gold touches. Features elegant rounded dotted borders, dynamic glassmorphism, and smooth micro-animations.
+- **Pass & Ticketing:** Currently offering a limited Early Bird Pass at ₹950 (discounted from ₹1200) with a beautifully animated, fully responsive ticketing section.
 - **Registration Flow:** Step-by-step registration with payment proof (screenshot) upload using Cloudinary.
 - **Admin Dashboard:** Secure authentication for admins to review payments, approve/reject registrations, and view analytics.
 - **QR Code E-Passes:** Approved participants receive a unique QR code pass that can be downloaded as a PDF or saved on their devices.
@@ -11,9 +12,6 @@ A premier, royal-wedding-styled college event registration system and dashboard.
 - **Email Notifications:** Automated approval, rejection, and submission notifications using Resend API.
 - **Google Sheets Backup:** Seamless fallback and syncing to Google Sheets (optional).
 - **Responsive Design:** Completely optimized for both mobile and desktop users.
-
-## Screenshots
-*(Add screenshots of your application here)*
 
 ## Architecture
 The platform is split into a **Frontend (Next.js)** and **Backend (Express/Node.js)** architecture:
