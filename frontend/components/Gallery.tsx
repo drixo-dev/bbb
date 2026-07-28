@@ -29,12 +29,12 @@ export default function Gallery() {
       category: "High Energy"
     },
     {
-      src: "/images/uploaded/gallery-img-5.jpeg",
+      src: "/images/uploaded/gallery-img-5-new.png",
       title: "Feast & Festive Delicacies",
       category: "Banquet"
     },
     {
-      src: "/images/uploaded/img-6-v2.jpg",
+      src: "/images/uploaded/gallery-img-6.png",
       title: "Crown & Title Ceremony",
       category: "Awards"
     }

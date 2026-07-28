@@ -69,6 +69,7 @@ body {
   bottom: 4px;
   border: 1px dashed rgba(212, 175, 55, 0.4);
   pointer-events: none;
+  border-radius: inherit;
 }
 
 /* Custom Scrollbar */
@@ -90,15 +91,7 @@ body {
   background: #E8C96B;
 }
 
-/* Ornate Corner Accents */
+/* Ornate Corner Accents - Hidden as per new design */
 .corner-ornament {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  border-color: #D4AF37;
-  pointer-events: none;
+  display: none;
 }
-.corner-tl { top: 6px; left: 6px; border-top: 2px solid #D4AF37; border-left: 2px solid #D4AF37; }
-.corner-tr { top: 6px; right: 6px; border-top: 2px solid #D4AF37; border-right: 2px solid #D4AF37; }
-.corner-bl { bottom: 6px; left: 6px; border-bottom: 2px solid #D4AF37; border-left: 2px solid #D4AF37; }
-.corner-br { bottom: 6px; right: 6px; border-bottom: 2px solid #D4AF37; border-right: 2px solid #D4AF37; }
