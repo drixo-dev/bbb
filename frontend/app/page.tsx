@@ -9,7 +9,6 @@ import About from '@/components/About';
 import PassCards from '@/components/PassCards';
 import Gallery from '@/components/Gallery';
 import Footer from '@/components/Footer';
-import MusicToggle from '@/components/MusicToggle';
 import FloatingFlowers from '@/components/FloatingFlowers';
 import TraditionalBorders from '@/components/TraditionalBorders';
 import GoldenCursor from '@/components/GoldenCursor';
@@ -26,7 +25,6 @@ export default function HomePage() {
       <GoldenCursor />
       <TraditionalBorders />
       <FloatingFlowers />
-      <MusicToggle />
 
       {/* Navigation */}
       <Navbar />
