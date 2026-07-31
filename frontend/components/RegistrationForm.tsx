@@ -289,6 +289,7 @@ export default function RegistrationForm() {
                 <option value="SLS">SLS</option>
                 <option value="SOET">SOET</option>
                 <option value="SOP">SOP</option>
+                <option value="SOM">SOM</option>
               </select>
             </div>
           </div>
