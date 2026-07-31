@@ -9,7 +9,7 @@ export default function FAQ() {
   const faqs = [
     {
       q: "What is the date, time, and venue for Band Baaja Baarat 2026?",
-      a: "The event takes place on Saturday, October 24, 2026 starting at 6:00 PM onwards at the Grand Palace Auditorium, Campus Grounds."
+      a: "The event takes place on Saturday, August 22, 2026 starting at 5:00 PM onwards. (Venue revealing soon)"
     },
     {
       q: "What is included with the Band Baaja Baarat Passes?",

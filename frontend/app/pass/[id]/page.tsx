@@ -180,7 +180,7 @@ function PassContent() {
                 </span>
               </div>
               <div className="text-[10px] text-gold-champagne/80 pt-2 text-center border-t border-gold-antique/10 font-marcellus tracking-wider">
-                Aug 22 2026 • 5:00 PM • Grand Palace Auditorium
+                Aug 22 2026 • 5:00 PM • Venue Revealing Soon
               </div>
             </div>
 

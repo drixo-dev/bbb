@@ -81,7 +81,7 @@ export default function Footer() {
               Event Helpdesk
             </h4>
             <p className="font-poppins text-xs text-royal-ivory/80 leading-relaxed">
-              Grand Palace Auditorium, Campus Grounds
+              Venue Revealing Soon
             </p>
             <p className="font-poppins text-xs text-gold-warm">
               Helpline: +91 97233 48341<br/>
