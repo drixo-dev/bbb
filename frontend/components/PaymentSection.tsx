@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { QrCode, Upload, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { QrCode, Upload, CheckCircle2, ShieldCheck, ArrowRight, Copy } from 'lucide-react';
 import { apiGetPass, apiSubmitPayment, Participant } from '@/lib/api';
 
 
@@ -20,6 +20,13 @@ export default function PaymentSection() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'CASH'>('UPI');
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyUPI = () => {
+    navigator.clipboard.writeText('k4838447-1@okhdfcbank');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     if (regId) {
@@ -158,7 +165,17 @@ export default function PaymentSection() {
                 <img src="/qr-code.png" alt="Payment QR Code" className="w-full h-full object-contain rounded-lg" />
               </div>
 
-
+              <div className="mt-6 flex items-center justify-center gap-3 bg-maroon-950/50 py-2.5 px-4 mx-auto w-max rounded-xl border border-gold-antique/20">
+                <span className="font-mono text-royal-ivory text-sm tracking-wider">k4838447-1@okhdfcbank</span>
+                <button 
+                  type="button"
+                  onClick={handleCopyUPI}
+                  className="text-gold-champagne hover:text-white transition-colors p-1.5 rounded-lg hover:bg-maroon-800"
+                  title="Copy UPI ID"
+                >
+                  {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
           </div>
 
