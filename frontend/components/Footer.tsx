@@ -81,7 +81,7 @@ export default function Footer() {
               Event Helpdesk
             </h4>
             <p className="font-poppins text-xs text-royal-ivory/80 leading-relaxed">
-              Venue Revealing Soon
+              <a href="https://maps.app.goo.gl/PzGUtiguipyvSKdD9" target="_blank" rel="noopener noreferrer" className="underline hover:text-gold-antique transition-colors">The Serene Garden</a>
             </p>
             <p className="font-poppins text-xs text-gold-warm">
               Helpline: +91 97233 48341<br/>

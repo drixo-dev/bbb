@@ -93,7 +93,7 @@ export default function Hero() {
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-900/60 border border-emerald-700/50">
               <MapPin className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-100">Revealing Soon</span>
+              <a href="https://maps.app.goo.gl/PzGUtiguipyvSKdD9" target="_blank" rel="noopener noreferrer" className="text-emerald-100 underline hover:text-emerald-200 transition-colors">The Serene Garden</a>
             </div>
           </div>
 
