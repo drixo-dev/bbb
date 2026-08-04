@@ -180,7 +180,7 @@ function PassContent() {
                 </span>
               </div>
               <div className="text-[10px] text-gold-champagne/80 pt-2 text-center border-t border-gold-antique/10 font-marcellus tracking-wider">
-                Aug 22 2026 • 5:00 PM • <a href="https://maps.app.goo.gl/PzGUtiguipyvSKdD9" target="_blank" rel="noopener noreferrer" className="underline hover:text-gold-antique transition-colors">The Serene Garden</a>
+                Aug 22 2026 • <a href="https://maps.app.goo.gl/PzGUtiguipyvSKdD9" target="_blank" rel="noopener noreferrer" className="underline hover:text-gold-antique transition-colors">The Serene Garden</a>
               </div>
             </div>
 

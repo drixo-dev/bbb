@@ -9,7 +9,7 @@ export default function FAQ() {
   const faqs = [
     {
       q: "What is the date, time, and venue for Band Baaja Baarat 2026?",
-      a: <>The event takes place on Saturday, August 22, 2026 starting at 5:00 PM onwards. (Venue: <a href="https://maps.app.goo.gl/PzGUtiguipyvSKdD9" target="_blank" rel="noopener noreferrer" className="underline hover:text-gold-antique transition-colors">The Serene Garden</a>)</>
+      a: <>The event takes place on Saturday, August 22, 2026. (Venue: <a href="https://maps.app.goo.gl/PzGUtiguipyvSKdD9" target="_blank" rel="noopener noreferrer" className="underline hover:text-gold-antique transition-colors">The Serene Garden</a>)</>
     },
     {
       q: "What is included with the Band Baaja Baarat Passes?",
