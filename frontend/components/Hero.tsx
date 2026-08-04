@@ -89,7 +89,7 @@ export default function Hero() {
           <div className="flex flex-wrap justify-center items-center gap-6 mb-10 text-xs sm:text-sm text-gold-champagne font-marcellus">
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-900/60 border border-emerald-700/50">
               <Calendar className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-100">August 22, 2026 • 5:00 PM onwards</span>
+              <span className="text-emerald-100">August 22, 2026</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-900/60 border border-emerald-700/50">
               <MapPin className="w-4 h-4 text-emerald-400" />
