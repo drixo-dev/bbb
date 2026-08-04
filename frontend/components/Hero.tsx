@@ -128,12 +128,55 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Scroll Indicator Arrow */}
-        <div className="mt-8 flex justify-center">
-          <Link href="#countdown" className="text-gold-champagne/70 hover:text-gold-champagne animate-bounce p-2">
-            <ChevronDown className="w-8 h-8" />
-          </Link>
-        </div>
+        {/* Sponsors Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="mt-16 mb-4 flex flex-col sm:flex-row items-center justify-center gap-16 sm:gap-32 relative z-20 w-full"
+        >
+          {/* Co-sponsor */}
+          <div className="flex flex-col items-center group">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-8 w-full">
+              <div className="h-[2px] w-8 sm:w-12 bg-gradient-to-r from-transparent to-gold-antique opacity-80" />
+              <h3 className="font-cinzel text-2xl sm:text-3xl text-gold-gradient font-extrabold tracking-widest uppercase drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)] text-center whitespace-nowrap">
+                Co-Sponsor
+              </h3>
+              <div className="h-[2px] w-8 sm:w-12 bg-gradient-to-l from-transparent to-gold-antique opacity-80" />
+            </div>
+            <div className="relative transition-transform duration-500 hover:-translate-y-2">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gold-champagne rounded-2xl blur-xl opacity-20 group-hover:opacity-60 transition-opacity duration-500"></div>
+              {/* Image Container */}
+              <div className="relative bg-white/95 p-3 sm:p-4 rounded-2xl border-[3px] border-gold-antique/60 group-hover:border-gold-champagne shadow-[0_10px_30px_rgba(212,175,55,0.3)] flex items-center justify-center overflow-hidden">
+                <img src="/images/dragon-logo.png" alt="Dragon Tattoo Logo" className="h-32 sm:h-48 w-auto object-contain transition-transform duration-500 group-hover:scale-110 mix-blend-multiply scale-110 sm:scale-125" />
+              </div>
+            </div>
+          </div>
+
+          {/* Photobooth partner */}
+          <div className="flex flex-col items-center group mt-4 sm:mt-0">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-8 w-full">
+              <div className="h-[2px] w-4 sm:w-8 bg-gradient-to-r from-transparent to-gold-antique opacity-80" />
+              <h3 className="font-cinzel text-2xl sm:text-3xl text-gold-gradient font-extrabold tracking-widest uppercase drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)] text-center whitespace-nowrap">
+                Photobooth Partner
+              </h3>
+              <div className="h-[2px] w-4 sm:w-8 bg-gradient-to-l from-transparent to-gold-antique opacity-80" />
+            </div>
+            <div className="relative transition-transform duration-500 hover:-translate-y-2">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gold-champagne rounded-2xl blur-xl opacity-20 group-hover:opacity-60 transition-opacity duration-500"></div>
+              {/* Image directly with styling to avoid white border. The image acts as its own container. */}
+              <img 
+                src="/images/piclelo-logo.png" 
+                alt="Piclelo Logo" 
+                className="relative h-[152px] sm:h-[224px] w-auto rounded-2xl border-[3px] border-gold-antique/60 group-hover:border-gold-champagne shadow-[0_10px_30px_rgba(212,175,55,0.3)] object-contain transition-transform duration-500 group-hover:scale-105" 
+                style={{ backgroundColor: 'transparent' }} 
+              />
+            </div>
+          </div>
+        </motion.div>
+
       </div>
 
       <ResumeRegistrationModal 
