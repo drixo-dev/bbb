@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Sparkles, Calendar, MapPin, ChevronDown, RefreshCw } from 'lucide-react';
 import ResumeRegistrationModal from './ResumeRegistrationModal';
+import RegistrationClosedModal from './RegistrationClosedModal';
 
 export default function Hero() {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isClosedModalOpen, setIsClosedModalOpen] = useState(false);
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center pt-24 pb-16 px-4 overflow-hidden royal-damask-bg">
@@ -99,13 +101,13 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap">
-            <Link
-              href="/register"
+            <button
+              onClick={() => setIsClosedModalOpen(true)}
               className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 font-marcellus font-bold text-base tracking-widest uppercase shadow-gold-intense hover:scale-105 transition-all duration-300 border-2 border-gold-champagne flex items-center justify-center gap-3 group"
             >
               <span>Book Royal Pass Now</span>
               <span className="group-hover:translate-x-1 transition-transform">👑</span>
-            </Link>
+            </button>
 
             <Link
               href="#passes"
@@ -119,7 +121,7 @@ export default function Hero() {
           <div className="mt-8 pt-6 border-t border-gold-antique/20">
             <p className="font-poppins text-xs text-royal-ivory/60 mb-2">Already Registered?</p>
             <button 
-              onClick={() => setIsResumeModalOpen(true)}
+              onClick={() => setIsClosedModalOpen(true)}
               className="font-marcellus text-sm font-bold text-gold-champagne hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto"
             >
               <RefreshCw className="w-4 h-4" />
@@ -182,6 +184,11 @@ export default function Hero() {
       <ResumeRegistrationModal 
         isOpen={isResumeModalOpen} 
         onClose={() => setIsResumeModalOpen(false)} 
+      />
+
+      <RegistrationClosedModal
+        isOpen={isClosedModalOpen}
+        onClose={() => setIsClosedModalOpen(false)}
       />
     </section>
   );
