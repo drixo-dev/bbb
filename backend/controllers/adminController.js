@@ -63,18 +63,27 @@ const adminLogin = async (req, res) => {
 const getDashboardStats = async (req, res) => {
   try {
     const totalRegistrations = await Participant.countDocuments({ isDeleted: { $ne: true } });
-    const pendingPayments = await Participant.countDocuments({ paymentStatus: 'Pending Verification', isDeleted: { $ne: true } });
-    const approvedPayments = await Participant.countDocuments({ paymentStatus: 'Approved', isDeleted: { $ne: true } });
-    const rejectedPayments = await Participant.countDocuments({ paymentStatus: 'Rejected', isDeleted: { $ne: true } });
-    const checkedInCount = await Participant.countDocuments({ ticketCollected: true, isDeleted: { $ne: true } });
+    const allActive = await Participant.find({ isDeleted: { $ne: true } });
+    const totalPasses = allActive.reduce((sum, p) => sum + (p.passCount || 1), 0);
     
-    const approvedList = await Participant.find({ paymentStatus: 'Approved', isDeleted: { $ne: true } });
+    const pendingList = allActive.filter(p => p.paymentStatus === 'Pending Verification');
+    const pendingPayments = pendingList.reduce((sum, p) => sum + (p.passCount || 1), 0);
+    
+    const approvedList = allActive.filter(p => p.paymentStatus === 'Approved');
+    const approvedPayments = approvedList.reduce((sum, p) => sum + (p.passCount || 1), 0);
     const totalRevenue = approvedList.reduce((sum, p) => sum + (p.amount || 0), 0);
+    
+    const rejectedList = allActive.filter(p => p.paymentStatus === 'Rejected');
+    const rejectedPayments = rejectedList.reduce((sum, p) => sum + (p.passCount || 1), 0);
+    
+    const checkedInList = allActive.filter(p => p.ticketCollected === true);
+    const checkedInCount = checkedInList.reduce((sum, p) => sum + (p.passCount || 1), 0);
 
     return res.status(200).json({
       success: true,
       stats: {
         totalRegistrations,
+        totalPasses,
         pendingPayments,
         approvedPayments,
         rejectedPayments,
@@ -108,7 +117,21 @@ const getParticipants = async (req, res) => {
     }
 
     if (paymentStatus && paymentStatus !== 'All') {
-      query.paymentStatus = paymentStatus;
+      if (paymentStatus === 'Pending Verification (Cash)') {
+        query.paymentStatus = 'Pending Verification';
+        query.transactionId = /^CASH-/i;
+      } else if (paymentStatus === 'Pending Verification (Online)') {
+        query.paymentStatus = 'Pending Verification';
+        query.transactionId = { $not: /^CASH-/i };
+      } else if (paymentStatus === 'Approved (Cash)') {
+        query.paymentStatus = 'Approved';
+        query.transactionId = /^CASH-/i;
+      } else if (paymentStatus === 'Approved (Online)') {
+        query.paymentStatus = 'Approved';
+        query.transactionId = { $not: /^CASH-/i };
+      } else {
+        query.paymentStatus = paymentStatus;
+      }
     }
 
     const participants = await Participant.find(query).sort({ createdAt: -1 });

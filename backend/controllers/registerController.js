@@ -17,6 +17,8 @@ const getNextAction = (status) => {
 
 const registerParticipant = async (req, res) => {
   try {
+    return res.status(403).json({ success: false, message: 'Registrations are now closed.' });
+
     const { name, rollNumber, email, phone, school, passType, members } = req.body;
 
     if (!name || !rollNumber || !phone || !school || !passType) {
@@ -38,8 +40,15 @@ const registerParticipant = async (req, res) => {
 
     // Pass type validation for new registration
     let expectedMembersCount = 0;
-    if (passType === 'Couple Pass') expectedMembersCount = 1;
-    if (passType === 'Group Pass (4 People)') expectedMembersCount = 3;
+    let passCount = 1;
+    if (passType === 'Couple Pass') {
+      expectedMembersCount = 1;
+      passCount = 2;
+    }
+    if (passType === 'Group Pass (4 People)') {
+      expectedMembersCount = 3;
+      passCount = 4;
+    }
 
     const memberList = Array.isArray(members) ? members : [];
     if (memberList.length < expectedMembersCount) {
@@ -61,6 +70,7 @@ const registerParticipant = async (req, res) => {
       school: school.trim(),
       passType,
       amount: price,
+      passCount,
       members: memberList,
       paymentStatus: 'Not Submitted'
     });
@@ -123,8 +133,15 @@ const editRegistration = async (req, res) => {
     }
 
     let expectedMembersCount = 0;
-    if (passType === 'Couple Pass') expectedMembersCount = 1;
-    if (passType === 'Group Pass (4 People)') expectedMembersCount = 3;
+    let passCount = 1;
+    if (passType === 'Couple Pass') {
+      expectedMembersCount = 1;
+      passCount = 2;
+    }
+    if (passType === 'Group Pass (4 People)') {
+      expectedMembersCount = 3;
+      passCount = 4;
+    }
 
     const memberList = Array.isArray(members) ? members : [];
     if (memberList.length < expectedMembersCount) {
@@ -154,6 +171,7 @@ const editRegistration = async (req, res) => {
     participant.passType = passType;
     participant.members = activeMembers;
     participant.amount = price;
+    participant.passCount = passCount;
 
     await participant.save();
 
