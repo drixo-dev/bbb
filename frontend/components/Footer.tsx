@@ -3,8 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { Instagram, MessageCircle, Mail, Heart, ArrowUp } from 'lucide-react';
+import RegistrationClosedModal from './RegistrationClosedModal';
 
 export default function Footer() {
+  const [isClosedModalOpen, setIsClosedModalOpen] = React.useState(false);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -71,7 +73,7 @@ export default function Footer() {
               <li><Link href="/#about" className="hover:text-gold-champagne transition-colors">About Event</Link></li>
               <li><Link href="/#passes" className="hover:text-gold-champagne transition-colors">Pass Tiers</Link></li>
               <li><Link href="/#gallery" className="hover:text-gold-champagne transition-colors">Gallery</Link></li>
-              <li><Link href="/register" className="hover:text-gold-champagne transition-colors">Register</Link></li>
+              <li><button onClick={() => setIsClosedModalOpen(true)} className="hover:text-gold-champagne transition-colors">Register</button></li>
             </ul>
           </div>
 
@@ -108,6 +110,10 @@ export default function Footer() {
           </button>
         </div>
       </div>
+      <RegistrationClosedModal
+        isOpen={isClosedModalOpen}
+        onClose={() => setIsClosedModalOpen(false)}
+      />
     </footer>
   );
 }
