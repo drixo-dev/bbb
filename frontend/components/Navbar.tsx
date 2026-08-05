@@ -4,11 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import ResumeRegistrationModal from './ResumeRegistrationModal';
+import RegistrationClosedModal from './RegistrationClosedModal';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isClosedModalOpen, setIsClosedModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,19 +70,19 @@ export default function Navbar() {
 
           {/* Find My Registration */}
           <button
-            onClick={() => setIsResumeModalOpen(true)}
+            onClick={() => setIsClosedModalOpen(true)}
             className="font-marcellus text-sm tracking-widest text-gold-champagne hover:text-white transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-gold-champagne hover:after:w-full after:transition-all after:duration-300"
           >
             Find My Registration
           </button>
 
           {/* CTA Register Button */}
-          <Link
-            href="/register"
+          <button
+            onClick={() => setIsClosedModalOpen(true)}
             className="px-6 py-2.5 rounded-full bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 font-marcellus font-bold text-sm tracking-wider shadow-gold-glow hover:scale-105 hover:shadow-gold-intense transition-all duration-300 border border-gold-champagne"
           >
             Register Now 👑
-          </Link>
+          </button>
         </div>
 
         {/* Mobile Hamburger Toggle */}
@@ -109,20 +111,22 @@ export default function Navbar() {
           <button
             onClick={() => {
               setMobileMenuOpen(false);
-              setIsResumeModalOpen(true);
+              setIsClosedModalOpen(true);
             }}
             className="block w-full text-left font-marcellus text-lg text-gold-champagne hover:text-white py-1"
           >
             Find My Registration
           </button>
 
-          <Link
-            href="/register"
-            onClick={() => setMobileMenuOpen(false)}
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setIsClosedModalOpen(true);
+            }}
             className="block text-center w-full py-3 rounded-full bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-marcellus font-bold tracking-wider shadow-gold-glow"
           >
             Register Now 👑
-          </Link>
+          </button>
         </div>
       )}
       </nav>
@@ -130,6 +134,10 @@ export default function Navbar() {
       <ResumeRegistrationModal 
         isOpen={isResumeModalOpen} 
         onClose={() => setIsResumeModalOpen(false)} 
+      />
+      <RegistrationClosedModal
+        isOpen={isClosedModalOpen}
+        onClose={() => setIsClosedModalOpen(false)}
       />
     </>
   );

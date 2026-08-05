@@ -1,10 +1,12 @@
 "use client";
 
-import React from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
+import RegistrationClosedModal from './RegistrationClosedModal';
 import { Check, Sparkles, Star } from 'lucide-react';
 
 export default function PassCards() {
+  const [isClosedModalOpen, setIsClosedModalOpen] = useState(false);
   const passes = [
     {
       id: 'Single',
@@ -90,8 +92,8 @@ export default function PassCards() {
               </div>
 
               {/* Book Pass CTA */}
-              <Link
-                href={`/register?pass=${encodeURIComponent(pass.name)}`}
+              <button
+                onClick={() => setIsClosedModalOpen(true)}
                 className={`w-full py-3.5 rounded-full font-marcellus font-bold text-sm tracking-widest uppercase text-center block transition-all duration-300 border ${
                   pass.popular
                     ? 'bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 shadow-gold-glow hover:scale-105 border-gold-champagne'
@@ -99,11 +101,15 @@ export default function PassCards() {
                 }`}
               >
                 Book {pass.name}
-              </Link>
+              </button>
             </div>
           ))}
         </div>
       </div>
+      <RegistrationClosedModal
+        isOpen={isClosedModalOpen}
+        onClose={() => setIsClosedModalOpen(false)}
+      />
     </section>
   );
 }
