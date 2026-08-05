@@ -24,8 +24,17 @@ export default function PaymentSection({ onStatusChange }: { onStatusChange?: (s
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'CASH'>('UPI');
   const [copied, setCopied] = useState(false);
 
+  const getQRDetails = () => {
+    if (participant?.passType === 'Couple Pass') {
+      return { image: '/couple-qr-code.png', upiId: 'nityamodi21@okhdfcbank' };
+    }
+    return { image: '/qr-code.png', upiId: 'k4838447-1@okhdfcbank' };
+  };
+
+  const { image: qrImage, upiId } = getQRDetails();
+
   const handleCopyUPI = () => {
-    navigator.clipboard.writeText('k4838447-1@okhdfcbank');
+    navigator.clipboard.writeText(upiId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -168,11 +177,11 @@ export default function PaymentSection({ onStatusChange }: { onStatusChange?: (s
                   </p>
 
                   <div className="relative w-48 h-48 mx-auto bg-white p-3 rounded-2xl border-4 border-gold-antique shadow-gold-glow flex items-center justify-center">
-                    <img src="/qr-code.png" alt="Payment QR Code" className="w-full h-full object-contain rounded-lg" />
+                    <img src={qrImage} alt="Payment QR Code" className="w-full h-full object-contain rounded-lg" />
                   </div>
 
                   <div className="mt-6 flex items-center justify-center gap-3 bg-maroon-950/50 py-2.5 px-4 mx-auto w-max rounded-xl border border-gold-antique/20">
-                    <span className="font-mono text-royal-ivory text-sm tracking-wider">k4838447-1@okhdfcbank</span>
+                    <span className="font-mono text-royal-ivory text-sm tracking-wider">{upiId}</span>
                     <button 
                       type="button"
                       onClick={handleCopyUPI}
