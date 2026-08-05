@@ -395,7 +395,7 @@ export default function AdminPage() {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto border border-gold-antique/20 rounded-b-2xl">
             {loading ? (
               <div className="py-16 text-center">
                 <div className="w-8 h-8 rounded-full border-2 border-gold-antique border-t-transparent animate-spin mx-auto mb-3" />
@@ -410,6 +410,7 @@ export default function AdminPage() {
               <table className="w-full font-poppins text-xs">
                 <thead>
                   <tr className="border-b border-gold-antique/20 text-gold-antique uppercase tracking-wider text-[10px]">
+                    <th className="px-4 py-3 text-left w-12">#</th>
                     <th className="px-4 py-3 text-left">Reg ID</th>
                     <th className="px-4 py-3 text-left">Identity</th>
                     <th className="px-4 py-3 text-left">Pass & School</th>
@@ -421,8 +422,11 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {participants.map((p) => (
+                  {participants.map((p, index) => (
                     <tr key={p.registrationId} className="border-b border-gold-antique/10 hover:bg-maroon-800/40 transition-colors">
+                      <td className="px-4 py-3 text-gold-champagne font-bold text-sm">
+                        {index + 1}
+                      </td>
                       <td className="px-4 py-3">
                         <span className="font-mono text-gold-champagne text-[11px]">{p.registrationId}</span>
                         {p.ticketCollected && <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-purple-900/50 text-purple-400">✓ Collected</span>}
