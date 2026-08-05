@@ -55,7 +55,7 @@ export default function AdminPage() {
 
   // Editing Participant
   const [editingParticipant, setEditingParticipant] = useState<Participant | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', rollNumber: '' });
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', rollNumber: '', amount: 0, passCount: 1 });
 
   // Check token in sessionStorage on mount
   useEffect(() => {
@@ -259,11 +259,12 @@ export default function AdminPage() {
   // ============ DASHBOARD ============
   const statCards = [
     { label: 'Total Registered', value: stats.totalRegistrations || 0, icon: Users, color: 'text-blue-400' },
+    { label: 'Total Passes Sold', value: stats.totalPasses || 0, icon: QrCode, color: 'text-purple-300' },
     { label: 'Revenue (Approved)', value: `₹${stats.totalRevenue || 0}`, icon: DollarSign, color: 'text-emerald-400' },
-    { label: 'Pending Payments', value: stats.pendingPayments || 0, icon: Clock, color: 'text-yellow-300' },
-    { label: 'Approved Payments', value: stats.approvedPayments || 0, icon: CheckCircle, color: 'text-emerald-400' },
-    { label: 'Rejected Payments', value: stats.rejectedPayments || 0, icon: XCircle, color: 'text-red-400' },
-    { label: 'Pass Collected', value: stats.checkedInCount || 0, icon: QrCode, color: 'text-purple-400' },
+    { label: 'Pending Passes', value: stats.pendingPayments || 0, icon: Clock, color: 'text-yellow-300' },
+    { label: 'Approved Passes', value: stats.approvedPayments || 0, icon: CheckCircle, color: 'text-emerald-400' },
+    { label: 'Rejected Passes', value: stats.rejectedPayments || 0, icon: XCircle, color: 'text-red-400' },
+    { label: 'Passes Collected', value: stats.checkedInCount || 0, icon: QrCode, color: 'text-purple-400' },
   ];
 
   return (
@@ -376,8 +377,12 @@ export default function AdminPage() {
                 className="px-3 py-2.5 rounded-xl bg-maroon-900/60 border border-gold-antique/30 text-royal-ivory focus:border-gold-champagne focus:outline-none font-poppins text-xs"
               >
                 <option value="All">All Status</option>
-                <option value="Pending Verification">Pending</option>
-                <option value="Approved">Approved</option>
+                <option value="Pending Verification">Pending (All)</option>
+                <option value="Pending Verification (Cash)">Pending (Cash)</option>
+                <option value="Pending Verification (Online)">Pending (Online)</option>
+                <option value="Approved">Approved (All)</option>
+                <option value="Approved (Cash)">Approved (Cash)</option>
+                <option value="Approved (Online)">Approved (Online)</option>
                 <option value="Rejected">Rejected</option>
               </select>
               <button
@@ -408,6 +413,7 @@ export default function AdminPage() {
                     <th className="px-4 py-3 text-left">Reg ID</th>
                     <th className="px-4 py-3 text-left">Identity</th>
                     <th className="px-4 py-3 text-left">Pass & School</th>
+                    <th className="px-4 py-3 text-left">Passes</th>
                     <th className="px-4 py-3 text-left">Reg Time</th>
                     <th className="px-4 py-3 text-left">Amount</th>
                     <th className="px-4 py-3 text-left">Payment Details</th>
@@ -436,6 +442,9 @@ export default function AdminPage() {
                           </span>
                           <p className="text-gold-bright text-[10px] font-semibold">{p.school}</p>
                         </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="font-playfair text-lg font-bold text-royal-ivory">{p.passCount || 1}</span>
                       </td>
                       <td className="px-4 py-3 font-mono text-royal-ivory/80">
                         {p.createdAt ? new Date(p.createdAt).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A'}
@@ -491,7 +500,7 @@ export default function AdminPage() {
                           <button
                             onClick={() => {
                               setEditingParticipant(p);
-                              setEditForm({ name: p.name, email: p.email, phone: p.phone, rollNumber: p.rollNumber });
+                              setEditForm({ name: p.name, email: p.email, phone: p.phone, rollNumber: p.rollNumber, amount: p.amount, passCount: p.passCount || 1 });
                             }}
                             className="p-1.5 rounded-lg bg-blue-900/40 border border-blue-500/40 text-blue-400 hover:bg-blue-800/60 transition-all"
                             title="Edit Participant"
@@ -625,6 +634,29 @@ export default function AdminPage() {
                   onChange={(e) => setEditForm({ ...editForm, rollNumber: e.target.value })}
                   className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gold-antique/80 mb-1 text-xs">Amount Paid (₹)</label>
+                  <input
+                    type="number"
+                    required
+                    value={editForm.amount}
+                    onChange={(e) => setEditForm({ ...editForm, amount: Number(e.target.value) })}
+                    className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne font-bold text-gold-bright"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gold-antique/80 mb-1 text-xs">Number of Passes</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={editForm.passCount}
+                    onChange={(e) => setEditForm({ ...editForm, passCount: Number(e.target.value) })}
+                    className="w-full bg-maroon-900/60 border border-gold-antique/30 rounded-xl p-3 text-royal-ivory placeholder-royal-ivory/40 focus:outline-none focus:border-gold-champagne font-bold text-purple-300"
+                  />
+                </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button

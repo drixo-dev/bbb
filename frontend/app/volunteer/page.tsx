@@ -358,7 +358,12 @@ export default function VolunteerPage() {
               
               <div>
                 <div className="text-[10px] uppercase tracking-wider font-poppins text-gold-warm/50 mb-1">Pass Type</div>
-                <div className="font-poppins text-royal-ivory">{participant.passType}</div>
+                <div className="font-poppins text-royal-ivory">
+                  {participant.passType} 
+                  <span className="font-bold text-purple-300 ml-2 bg-purple-900/40 px-2 py-0.5 rounded-md border border-purple-500/30">
+                    Give {participant.passCount || 1} Pass(es)
+                  </span>
+                </div>
                 {participant.members && participant.members.length > 0 && (
                   <div className="text-xs text-gold-warm/70 mt-1">
                     Members: {participant.members.map((m: any) => `${m.name} (${m.rollNumber})`).join(', ')}

@@ -2,9 +2,9 @@ const Participant = require('../models/Participant');
 const crypto = require('crypto');
 
 const PASS_PRICES = {
-  'Single Pass': 950,
-  'Couple Pass': 899,
-  'Group Pass (4 People)': 1599
+  'Single Pass': 1100,
+  'Couple Pass': 2150,
+  'Group Pass (4 People)': 4200
 };
 
 const getNextAction = (status) => {
@@ -17,6 +17,8 @@ const getNextAction = (status) => {
 
 const registerParticipant = async (req, res) => {
   try {
+    return res.status(403).json({ success: false, message: 'Registrations are now closed.' });
+
     const { name, rollNumber, email, phone, school, passType, members } = req.body;
 
     if (!name || !rollNumber || !phone || !school || !passType) {
@@ -38,8 +40,15 @@ const registerParticipant = async (req, res) => {
 
     // Pass type validation for new registration
     let expectedMembersCount = 0;
-    if (passType === 'Couple Pass') expectedMembersCount = 1;
-    if (passType === 'Group Pass (4 People)') expectedMembersCount = 3;
+    let passCount = 1;
+    if (passType === 'Couple Pass') {
+      expectedMembersCount = 1;
+      passCount = 2;
+    }
+    if (passType === 'Group Pass (4 People)') {
+      expectedMembersCount = 3;
+      passCount = 4;
+    }
 
     const memberList = Array.isArray(members) ? members : [];
     if (memberList.length < expectedMembersCount) {
@@ -49,7 +58,7 @@ const registerParticipant = async (req, res) => {
       });
     }
 
-    const price = PASS_PRICES[passType] || 950;
+    const price = PASS_PRICES[passType] || 1100;
     const registrationId = 'BBB26-' + crypto.randomBytes(4).toString('hex').toUpperCase();
 
     const newParticipant = new Participant({
@@ -61,6 +70,7 @@ const registerParticipant = async (req, res) => {
       school: school.trim(),
       passType,
       amount: price,
+      passCount,
       members: memberList,
       paymentStatus: 'Not Submitted'
     });
@@ -123,8 +133,15 @@ const editRegistration = async (req, res) => {
     }
 
     let expectedMembersCount = 0;
-    if (passType === 'Couple Pass') expectedMembersCount = 1;
-    if (passType === 'Group Pass (4 People)') expectedMembersCount = 3;
+    let passCount = 1;
+    if (passType === 'Couple Pass') {
+      expectedMembersCount = 1;
+      passCount = 2;
+    }
+    if (passType === 'Group Pass (4 People)') {
+      expectedMembersCount = 3;
+      passCount = 4;
+    }
 
     const memberList = Array.isArray(members) ? members : [];
     if (memberList.length < expectedMembersCount) {
@@ -135,7 +152,7 @@ const editRegistration = async (req, res) => {
     }
 
     const activeMembers = memberList.slice(0, expectedMembersCount);
-    const price = PASS_PRICES[passType] || 950;
+    const price = PASS_PRICES[passType] || 1100;
 
     const newRollNumber = req.body.rollNumber ? req.body.rollNumber.trim().toUpperCase() : participant.rollNumber;
     const newEmail = email ? email.trim().toLowerCase() : participant.email;
@@ -154,6 +171,7 @@ const editRegistration = async (req, res) => {
     participant.passType = passType;
     participant.members = activeMembers;
     participant.amount = price;
+    participant.passCount = passCount;
 
     await participant.save();
 

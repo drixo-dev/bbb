@@ -11,7 +11,7 @@ export default function RegistrationForm() {
   const searchParams = useSearchParams();
   
   const urlPass = searchParams?.get('pass');
-  const initialPass = urlPass === 'Early Bird Pass' ? 'Single Pass' : (urlPass || 'Single Pass');
+  const initialPass = urlPass || 'Single Pass';
   const editRegId = searchParams?.get('edit');
   const [isEditMode, setIsEditMode] = useState(!!editRegId);
 
@@ -37,7 +37,7 @@ export default function RegistrationForm() {
   useEffect(() => {
     if (searchParams?.get('pass')) {
       const p = searchParams.get('pass');
-      setPassType(p === 'Early Bird Pass' ? 'Single Pass' : (p || 'Single Pass'));
+      setPassType(p || 'Single Pass');
     }
   }, [searchParams]);
 
@@ -184,9 +184,11 @@ export default function RegistrationForm() {
           <label className="font-marcellus text-sm font-bold text-gold-champagne block mb-2 uppercase tracking-wider">
             Select Pass Category *
           </label>
-          <div className="grid grid-cols-1 max-w-xs gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
-              { label: 'Early Bird Pass', value: 'Single Pass', price: '₹950' }
+              { label: 'Single Pass', value: 'Single Pass', price: '₹1100' },
+              { label: 'Couple Pass', value: 'Couple Pass', price: '₹2150' },
+              { label: 'Group Pass (4 People)', value: 'Group Pass (4 People)', price: '₹4200' }
             ].map((p) => (
               <button
                 key={p.value}

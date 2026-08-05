@@ -24,6 +24,7 @@ export interface Participant {
   school: string;
   passType: string;
   amount: number;
+  passCount?: number;
   members: Member[];
   transactionId?: string;
   screenshotUrl?: string;

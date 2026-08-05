@@ -10,10 +10,10 @@ export default function PassCards() {
   const passes = [
     {
       id: 'Single',
-      name: 'Early Bird Pass',
+      name: 'Single Pass',
       tagline: 'Individual Royal Entry',
-      price: 950,
-      originalPrice: 1200,
+      price: 1100,
+      originalPrice: 1300,
       popular: false,
       locked: false,
       benefits: [
@@ -22,6 +22,40 @@ export default function PassCards() {
         'Full Multi-Course Royal Banquet Dinner',
         'Access to Live DJ & Cultural Stage Shows',
         'Digital QR E-Pass & Physical Badge'
+      ]
+    },
+    {
+      id: 'Couple',
+      name: 'Couple Pass',
+      tagline: 'Entry for 2 Baaratis',
+      price: 2150,
+      originalPrice: 2400,
+      popular: false, // TODO: Enable this after a week (set to true)
+      locked: false,
+      benefits: [
+        'Entry for 2 People (Couple / Duo)',
+        'VIP Red Carpet Welcome & Photo Booth Access',
+        'Full Multi-Course Royal Banquet Dinner for 2',
+        'Front-Row Stage Access & Couple Dance Floor',
+        'Eligible for Best Dressed Couple Awards',
+        'Digital QR E-Passes for Both Members'
+      ]
+    },
+    {
+      id: 'Group',
+      name: 'Group Pass (4 People)',
+      tagline: 'Squad Entry for 4 Friends',
+      price: 4200,
+      originalPrice: 4800,
+      popular: false,
+      locked: false,
+      benefits: [
+        'Entry for 4 Friends in a Single Pass',
+        'Reserved Squad Table & Welcome Drinks',
+        'Full Multi-Course Royal Banquet Dinner for 4',
+        'Complimentary Souvenir Photo Frame',
+        'Exclusive Squad Dance Floor Access',
+        'Digital QR E-Passes for All 4 Members'
       ]
     }
   ];
@@ -37,11 +71,11 @@ export default function PassCards() {
             ROYAL PASS
           </h2>
           <p className="font-poppins text-sm text-royal-ivory/80 max-w-xl mx-auto">
-            Secure your Early Bird Pass before they run out! Limited passes available.
+            Secure your passes before they run out! Limited passes available.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 max-w-sm mx-auto gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {passes.map((pass) => (
             <div
               key={pass.id}

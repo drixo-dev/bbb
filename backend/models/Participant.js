@@ -14,6 +14,7 @@ const participantSchema = new mongoose.Schema({
   school: { type: String, required: true },
   passType: { type: String, enum: ['Single Pass', 'Couple Pass', 'Group Pass (4 People)'], required: true },
   amount: { type: Number, required: true },
+  passCount: { type: Number, default: 1 },
   members: [memberSchema],
   transactionId: { type: String, default: '' },
   screenshotUrl: { type: String, default: '' },
