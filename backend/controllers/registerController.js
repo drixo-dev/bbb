@@ -168,4 +168,36 @@ const editRegistration = async (req, res) => {
   }
 };
 
-module.exports = { registerParticipant, resumeRegistration, editRegistration };
+const verifyIdentity = async (req, res) => {
+  try {
+    const { registrationId, identityValue } = req.body;
+    if (!registrationId || !identityValue) {
+      return res.status(400).json({ success: false, message: 'Registration ID and identity value are required.' });
+    }
+
+    const participant = await Participant.findOne({ registrationId });
+    if (!participant) {
+      return res.status(404).json({ success: false, message: 'Registration not found.' });
+    }
+
+    const val = identityValue.trim().toLowerCase();
+    
+    const idMatch = participant.registrationId.toLowerCase() === val;
+    const emailMatch = participant.email.toLowerCase() === val;
+    const phoneMatch = participant.phone.trim() === identityValue.trim();
+
+    if (idMatch || emailMatch || phoneMatch) {
+      return res.status(200).json({ success: true, message: 'Identity verified.' });
+    } else {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Verification failed.\n\nPlease enter your Registration ID, registered email, or registered phone number.' 
+      });
+    }
+  } catch (error) {
+    console.error('Error in verifyIdentity:', error);
+    return res.status(500).json({ success: false, message: 'Server error during verification.' });
+  }
+};
+
+module.exports = { registerParticipant, resumeRegistration, editRegistration, verifyIdentity };

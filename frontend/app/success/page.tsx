@@ -3,15 +3,17 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, CheckCircle, Ticket, Share2 } from 'lucide-react';
+import { Sparkles, CheckCircle, Ticket, Share2, QrCode, Download } from 'lucide-react';
 import { apiGetPass, Participant } from '@/lib/api';
+import QRCode from 'qrcode';
 
-function SuccessContent() {
+function EPassContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const regId = searchParams?.get('regId');
   const [participant, setParticipant] = useState<Participant | null>(null);
   const [loading, setLoading] = useState(true);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,6 +26,16 @@ function SuccessContent() {
       .then((res) => {
         if (res.success && res.participant) {
           setParticipant(res.participant);
+          if (res.participant.paymentStatus === 'Approved') {
+            QRCode.toDataURL(res.participant.registrationId, {
+              width: 500,
+              margin: 2,
+              color: {
+                dark: '#5D0F1D',
+                light: '#FFFFFF'
+              }
+            }).then(setQrCodeUrl).catch(console.error);
+          }
         }
       })
       .catch(() => {})
@@ -71,10 +83,10 @@ function SuccessContent() {
   }
 
   return (
-    <div className="min-h-screen bg-maroon-900 royal-damask-bg flex items-center justify-center py-16 px-4">
-      <div className="max-w-2xl w-full">
-        {/* Main Success Card */}
-        <div ref={printRef} className="box-gold-frame rounded-3xl p-8 sm:p-12 bg-maroon-800/95 text-center relative shadow-2xl">
+    <div className="min-h-screen bg-maroon-900 royal-damask-bg flex flex-col items-center justify-center py-16 px-4 print:min-h-screen print:py-8 print:bg-maroon-900 print:bg-opacity-100 [-webkit-print-color-adjust:exact] [color-adjust:exact]">
+      <div className="max-w-2xl w-full print:max-w-none flex-grow flex items-center justify-center">
+        {/* Main E-Pass Card */}
+        <div ref={printRef} className="box-gold-frame rounded-3xl p-8 sm:p-12 bg-maroon-800/95 text-center relative shadow-2xl print:shadow-none print:p-6 print:border-none print:m-0">
           <div className="corner-ornament corner-tl" />
           <div className="corner-ornament corner-tr" />
           <div className="corner-ornament corner-bl" />
@@ -100,7 +112,9 @@ function SuccessContent() {
               <div className="p-6 rounded-2xl bg-maroon-900/80 border border-gold-antique/30 space-y-3 font-poppins text-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <CheckCircle className="w-5 h-5 text-emerald-400" />
-                  <span className="font-marcellus text-emerald-400 font-semibold text-base">Registration Successful</span>
+                  <span className="font-marcellus text-emerald-400 font-semibold text-base">
+                    {participant.paymentStatus === 'Approved' ? 'Registration Approved' : 'Registration Successful'}
+                  </span>
                 </div>
                 <p><span className="text-gold-antique font-semibold">Registration ID:</span> <span className="text-gold-bright font-mono text-lg">{participant.registrationId}</span></p>
                 <p><span className="text-gold-antique font-semibold">Name:</span> {participant.name}</p>
@@ -118,6 +132,33 @@ function SuccessContent() {
                 </p>
               </div>
 
+              {participant.paymentStatus === 'Approved' && qrCodeUrl && (
+                <>
+                  <div className="my-8 print:my-6 text-center">
+                    <div className="w-full border-t border-dashed border-gold-antique/30"></div>
+                  </div>
+                  
+                  <div className="text-center space-y-4 pt-2 print:space-y-2">
+                    <h3 className="font-cinzel text-xl font-bold text-gold-champagne tracking-widest print:text-2xl print:mb-2">
+                      YOUR DIGITAL E-PASS
+                    </h3>
+                    
+                    <div className="relative w-56 h-56 print:w-[320px] print:h-[320px] mx-auto bg-white p-3 print:p-5 rounded-2xl border-4 border-gold-antique shadow-gold-glow flex items-center justify-center">
+                      <img src={qrCodeUrl} alt="E-Pass QR Code" className="w-full h-full object-contain rounded-lg" />
+                    </div>
+                    
+                    <div className="max-w-xs mx-auto">
+                      <p className="font-poppins text-xs text-royal-ivory/80 leading-relaxed">
+                        Present this QR code at the registration desk to collect your physical event pass.
+                      </p>
+                      <p className="font-poppins text-[10px] text-gold-warm/60 leading-relaxed mt-2 italic">
+                        This QR is your official digital event pass.<br/>If you also received an approval email, both QR codes are identical.
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+
             </div>
           ) : (
             <div className="p-6 rounded-2xl bg-maroon-900/80 border border-gold-antique/30 text-center">
@@ -131,11 +172,17 @@ function SuccessContent() {
           )}
 
           {/* Action Buttons */}
-          <div className="mt-8 text-center space-y-4">
-            <p className="font-poppins text-sm text-gold-champagne font-medium">
-              We'll notify you once your payment is verified.
-            </p>
-            <div className="flex justify-center pt-2">
+          <div className="mt-8 text-center space-y-4 print:hidden">
+            {(!participant || participant.paymentStatus !== 'Approved') ? (
+              <p className="font-poppins text-sm text-gold-champagne font-medium">
+                We'll notify you once your payment is verified.
+              </p>
+            ) : (
+              <p className="font-poppins text-sm text-gold-champagne font-medium">
+                Your registration has been successfully verified.<br/>We look forward to welcoming you to Band Baaja Baarat 2026!
+              </p>
+            )}
+            <div className="flex justify-center gap-4 pt-2 flex-wrap">
               <Link
                 href="/"
                 className="py-3 px-8 rounded-full bg-maroon-900/80 border border-gold-antique/60 text-gold-champagne font-marcellus font-bold text-sm tracking-widest uppercase hover:bg-maroon-800 transition-all flex items-center justify-center gap-2"
@@ -143,6 +190,15 @@ function SuccessContent() {
                 <Share2 className="w-4 h-4" />
                 Back to Home
               </Link>
+              {participant?.paymentStatus === 'Approved' && (
+                <button
+                  onClick={() => window.print()}
+                  className="py-3 px-8 rounded-full bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-marcellus font-bold text-sm tracking-widest uppercase hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Download E-Pass
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -151,14 +207,14 @@ function SuccessContent() {
   );
 }
 
-export default function SuccessPage() {
+export default function EPassPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-maroon-900 flex items-center justify-center text-gold-champagne font-marcellus">
         Loading your Royal E-Pass...
       </div>
     }>
-      <SuccessContent />
+      <EPassContent />
     </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import TraditionalBorders from '@/components/TraditionalBorders';
@@ -8,6 +8,8 @@ import FloatingFlowers from '@/components/FloatingFlowers';
 import PaymentSection from '@/components/PaymentSection';
 
 function PaymentContent() {
+  const [status, setStatus] = useState<string>('Not Submitted');
+
   return (
     <div className="min-h-screen bg-maroon-900 royal-damask-bg pt-28 pb-16 px-4 relative overflow-hidden">
       <Navbar />
@@ -20,10 +22,10 @@ function PaymentContent() {
             Step 2 of 2
           </p>
           <h1 className="font-cinzel text-3xl sm:text-5xl font-bold text-gold-gradient">
-            COMPLETE PAYMENT
+            {status === 'Not Submitted' ? 'COMPLETE PAYMENT' : 'REGISTRATION COMPLETE'}
           </h1>
         </div>
-        <PaymentSection />
+        <PaymentSection onStatusChange={setStatus} />
       </div>
 
       <Footer />

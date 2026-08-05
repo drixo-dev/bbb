@@ -34,6 +34,7 @@ export interface Participant {
   checkedInAt?: string;
   rejectionReason?: string;
   createdAt: string;
+  updatedAt: string;
   ticketCollected?: boolean;
 }
 
@@ -187,6 +188,15 @@ export async function apiVolunteerCollectPass(token: string, registrationId: str
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ registrationId }),
+  });
+  return res.json();
+}
+
+export async function apiVerifyIdentity(payload: { registrationId: string, identityValue: string }) {
+  const res = await fetch(`${API_BASE_URL}/verify-identity`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
   return res.json();
 }

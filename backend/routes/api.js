@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerParticipant, resumeRegistration, editRegistration } = require('../controllers/registerController');
+const { registerParticipant, resumeRegistration, editRegistration, verifyIdentity } = require('../controllers/registerController');
 const { submitPayment } = require('../controllers/paymentController');
 const { getPassById } = require('../controllers/passController');
 const upload = require('../middleware/uploadMiddleware');
@@ -14,7 +14,7 @@ const publicApiLimiter = rateLimit({
 
 const submitLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // limit each IP to 10 registrations/payments per hour
+  max: 500, // limit each IP to 500 registrations/payments per hour
   message: { success: false, message: 'Too many submissions from this IP, please try again after an hour' }
 });
 
@@ -22,6 +22,7 @@ const submitLimiter = rateLimit({
 router.use(publicApiLimiter);
 router.post('/register', submitLimiter, registerParticipant);
 router.post('/resume-registration', submitLimiter, resumeRegistration);
+router.post('/verify-identity', submitLimiter, verifyIdentity);
 router.put('/registration/:registrationId', submitLimiter, editRegistration);
 router.post('/payment', upload.single('screenshot'), submitLimiter, submitPayment);
 router.get('/pass/:id', getPassById);
