@@ -126,8 +126,8 @@ export default function PassCards() {
               </div>
 
               {/* Book Pass CTA */}
-              <button
-                onClick={() => setIsClosedModalOpen(true)}
+              <Link
+                href={`/register?pass=${encodeURIComponent(pass.name)}`}
                 className={`w-full py-3.5 rounded-full font-marcellus font-bold text-sm tracking-widest uppercase text-center block transition-all duration-300 border ${
                   pass.popular
                     ? 'bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 shadow-gold-glow hover:scale-105 border-gold-champagne'
@@ -135,7 +135,7 @@ export default function PassCards() {
                 }`}
               >
                 Book {pass.name}
-              </button>
+              </Link>
             </div>
           ))}
         </div>

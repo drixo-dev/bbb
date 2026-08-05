@@ -17,8 +17,6 @@ const getNextAction = (status) => {
 
 const registerParticipant = async (req, res) => {
   try {
-    return res.status(403).json({ success: false, message: 'Registrations are now closed.' });
-
     const { name, rollNumber, email, phone, school, passType, members } = req.body;
 
     if (!name || !rollNumber || !phone || !school || !passType) {

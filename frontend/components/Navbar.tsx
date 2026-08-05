@@ -70,19 +70,19 @@ export default function Navbar() {
 
           {/* Find My Registration */}
           <button
-            onClick={() => setIsClosedModalOpen(true)}
+            onClick={() => setIsResumeModalOpen(true)}
             className="font-marcellus text-sm tracking-widest text-gold-champagne hover:text-white transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-gold-champagne hover:after:w-full after:transition-all after:duration-300"
           >
             Find My Registration
           </button>
 
           {/* CTA Register Button */}
-          <button
-            onClick={() => setIsClosedModalOpen(true)}
+          <Link
+            href="/register"
             className="px-6 py-2.5 rounded-full bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 font-marcellus font-bold text-sm tracking-wider shadow-gold-glow hover:scale-105 hover:shadow-gold-intense transition-all duration-300 border border-gold-champagne"
           >
             Register Now 👑
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Hamburger Toggle */}
@@ -111,22 +111,20 @@ export default function Navbar() {
           <button
             onClick={() => {
               setMobileMenuOpen(false);
-              setIsClosedModalOpen(true);
+              setIsResumeModalOpen(true);
             }}
             className="block w-full text-left font-marcellus text-lg text-gold-champagne hover:text-white py-1"
           >
             Find My Registration
           </button>
 
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setIsClosedModalOpen(true);
-            }}
+          <Link
+            href="/register"
+            onClick={() => setMobileMenuOpen(false)}
             className="block text-center w-full py-3 rounded-full bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-marcellus font-bold tracking-wider shadow-gold-glow"
           >
             Register Now 👑
-          </button>
+          </Link>
         </div>
       )}
       </nav>

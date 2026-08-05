@@ -28,6 +28,12 @@ export default function PaymentSection({ onStatusChange }: { onStatusChange?: (s
     if (participant?.passType === 'Couple Pass') {
       return { image: '/couple-qr-code.png', upiId: 'nityamodi21@okhdfcbank' };
     }
+    if (participant?.passType === 'Single Pass') {
+      return { image: '/single-qr-code.png', upiId: 'nityamodi21@okhdfcbank' };
+    }
+    if (participant?.passType === 'Group Pass (4 People)') {
+      return { image: '/group-qr-code.png', upiId: 'k4838447-1@okhdfcbank' };
+    }
     return { image: '/qr-code.png', upiId: 'k4838447-1@okhdfcbank' };
   };
 
