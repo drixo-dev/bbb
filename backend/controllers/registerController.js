@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const PASS_PRICES = {
   'Single Pass': 1100,
   'Couple Pass': 2150,
-  'Group Pass (4 People)': 4200
+  'Group Pass (4 People)': 4000
 };
 
 const getNextAction = (status) => {

@@ -45,7 +45,7 @@ export default function PassCards() {
       id: 'Group',
       name: 'Group Pass (4 People)',
       tagline: 'Squad Entry for 4 Friends',
-      price: 4200,
+      price: 4000,
       originalPrice: 4800,
       popular: false,
       locked: false,

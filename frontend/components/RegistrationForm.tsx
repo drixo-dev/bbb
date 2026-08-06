@@ -188,7 +188,7 @@ export default function RegistrationForm() {
             {[
               { label: 'Single Pass', value: 'Single Pass', price: '₹1100' },
               { label: 'Couple Pass', value: 'Couple Pass', price: '₹2150' },
-              { label: 'Group Pass (4 People)', value: 'Group Pass (4 People)', price: '₹4200' }
+              { label: 'Group Pass (4 People)', value: 'Group Pass (4 People)', price: '₹4000' }
             ].map((p) => (
               <button
                 key={p.value}
