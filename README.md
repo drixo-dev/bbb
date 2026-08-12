@@ -4,7 +4,7 @@ A premier, royal-wedding-styled college event registration system and dashboard.
 
 ## Features
 - **Ultra-Dark Royal Themed UI/UX:** An immersive frontend redesigned with a rich, ultra-dark royal maroon palette, accented by subtle emerald and gold touches. Features elegant rounded dotted borders, dynamic glassmorphism, and smooth micro-animations.
-- **Pass & Ticketing:** Currently offering Single Pass (₹1100), Couple Pass (₹2150), and Group Pass (₹4000) with a beautifully animated, fully responsive ticketing section.
+- **Pass & Ticketing:** Currently offering Single Pass (₹1200), Couple Pass (₹2200), and Group Pass (₹4200) with a beautifully animated, fully responsive ticketing section.
 - **Registration Flow:** Step-by-step registration with payment proof (screenshot) upload using Cloudinary.
 - **Admin Dashboard:** Secure authentication for admins to review payments, approve/reject registrations, and view analytics.
 - **QR Code E-Passes:** Approved participants receive a unique QR code pass that can be downloaded as a PDF or saved on their devices.

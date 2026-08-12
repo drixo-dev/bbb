@@ -109,12 +109,15 @@ export default function Hero() {
               <span className="group-hover:translate-x-1 transition-transform">👑</span>
             </Link>
 
-            <Link
-              href="#passes"
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('passes')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="w-full sm:w-auto px-6 py-4 rounded-full bg-maroon-900/80 hover:bg-maroon-800 text-gold-champagne font-marcellus font-semibold text-base tracking-widest uppercase border border-gold-antique/50 hover:border-gold-champagne transition-all duration-300"
             >
               Explore Passes
-            </Link>
+            </button>
           </div>
 
           {/* Find My Registration Link */}

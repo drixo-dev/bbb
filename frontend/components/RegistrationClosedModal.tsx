@@ -44,11 +44,11 @@ export default function RegistrationClosedModal({ isOpen, onClose }: Registratio
                 
                 <div className="p-4 rounded-xl bg-maroon-950/50 border border-gold-antique/20 space-y-3">
                   <p className="font-poppins text-sm text-royal-ivory leading-relaxed">
-                    Early Bird registrations are now <strong className="text-red-400">closed</strong>.
+                    Phase 1 registrations are now <strong className="text-red-400">closed</strong>.
                   </p>
                   <hr className="border-gold-antique/20" />
                   <p className="font-poppins text-sm text-emerald-400 font-medium">
-                    Regular registrations will open at 12:00 AM.
+                    Please stay tuned for Phase 2!
                   </p>
                 </div>
                 

@@ -68,7 +68,6 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* Find My Registration */}
           <button
             onClick={() => setIsResumeModalOpen(true)}
             className="font-marcellus text-sm tracking-widest text-gold-champagne hover:text-white transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-gold-champagne hover:after:w-full after:transition-all after:duration-300"
