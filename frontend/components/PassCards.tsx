@@ -130,8 +130,8 @@ export default function PassCards() {
                 href={`/register?pass=${encodeURIComponent(pass.name)}`}
                 className={`w-full py-3.5 rounded-full font-marcellus font-bold text-sm tracking-widest uppercase text-center block transition-all duration-300 border ${
                   pass.popular
-                    ? 'bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 shadow-gold-glow hover:scale-105 border-gold-champagne'
-                    : 'bg-maroon-900/80 hover:bg-gold-antique text-gold-champagne hover:text-maroon-900 border-gold-antique/50'
+                    ? 'bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 shadow-gold-glow hover:scale-110 hover:shadow-gold-intense border-gold-champagne'
+                    : 'bg-maroon-900/80 hover:bg-gold-antique text-gold-champagne hover:text-maroon-900 border-gold-antique/50 hover:scale-105 hover:shadow-gold-glow'
                 }`}
               >
                 Book {pass.name}

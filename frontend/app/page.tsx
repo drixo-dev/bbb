@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Countdown from '@/components/Countdown';
 import About from '@/components/About';
+import Sponsors from '@/components/Sponsors';
 import PassCards from '@/components/PassCards';
 import Gallery from '@/components/Gallery';
 import Footer from '@/components/Footer';
@@ -33,6 +34,7 @@ export default function HomePage() {
       <Hero />
       <Countdown />
       <About />
+      <Sponsors />
       <PassCards />
       <Gallery />
       <Footer />

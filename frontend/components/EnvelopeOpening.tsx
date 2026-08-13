@@ -68,9 +68,12 @@ export default function EnvelopeOpening({ onOpen }: EnvelopeOpeningProps) {
                 Cordially Invited To
               </p>
               
-              <h1 className="font-cinzel text-3xl sm:text-4xl font-bold text-gold-gradient mb-2 tracking-wide">
+              <h1 className="font-cinzel text-3xl sm:text-4xl font-bold text-gold-gradient mb-1 tracking-wide">
                 BAND BAAJA BAARAT
               </h1>
+              <p className="font-marcellus text-sm sm:text-base text-gold-champagne tracking-widest uppercase mb-3">
+                By Taranova Pizza
+              </p>
               
               <p className="font-cormorant text-xl text-royal-ivory italic mb-6">
                 Freshers 2026 • Royal Celebration
