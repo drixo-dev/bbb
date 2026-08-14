@@ -131,6 +131,7 @@ export default function VolunteerPage() {
         const parsed = JSON.parse(lookupId);
         if (parsed.registrationId) {
           lookupId = parsed.registrationId;
+          setScanResult(lookupId); // Update the input field UI to just show the ID
         }
       } catch (e) {
         // Ignore JSON parse errors, treat as raw ID
