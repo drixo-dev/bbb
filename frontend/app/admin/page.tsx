@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard, Users, DollarSign, Clock, CheckCircle, XCircle,
-  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail, UserPlus, FileText
+  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail, UserPlus, FileText, Ticket
 } from 'lucide-react';
 import {
   apiAdminLogin, apiAdminGetStats, apiAdminGetParticipants,
   apiAdminUpdateStatus, apiAdminDeleteParticipant, getExportCSVUrl,
-  apiAdminVerifyPass, Participant, apiAdminEditParticipant, apiAdminResendEmail, apiAdminCreateStaff
+  apiAdminVerifyPass, Participant, apiAdminEditParticipant, apiAdminResendEmail, apiAdminCreateStaff,
+  apiVolunteerCollectPass
 } from '@/lib/api';
 
 export default function AdminPage() {
@@ -170,6 +171,17 @@ export default function AdminPage() {
       alert('Email sent successfully!');
     } else {
       alert(res.message || 'Failed to resend email.');
+    }
+  };
+
+  const handleMarkCollected = async (registrationId: string) => {
+    if (!confirm('Mark this pass as collected?')) return;
+    const res = await apiVolunteerCollectPass(token, registrationId);
+    if (res.success) {
+      alert('Pass marked as collected!');
+      fetchData();
+    } else {
+      alert(res.message || 'Failed to mark as collected.');
     }
   };
 
@@ -528,6 +540,15 @@ export default function AdminPage() {
                               >
                                 <Mail className="w-3.5 h-3.5" />
                               </button>
+                              {!p.ticketCollected && (
+                                <button
+                                  onClick={() => handleMarkCollected(p.registrationId)}
+                                  className="p-1.5 rounded-lg bg-orange-900/40 border border-orange-500/40 text-orange-400 hover:bg-orange-800/60 transition-all"
+                                  title="Mark as Collected"
+                                >
+                                  <Ticket className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </>
                           )}
                           <button
