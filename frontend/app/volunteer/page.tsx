@@ -124,11 +124,24 @@ export default function VolunteerPage() {
 
   const verifyRegistration = async (id: string) => {
     if (!id) return;
+    
+    let lookupId = id.trim();
+    if (lookupId.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(lookupId);
+        if (parsed.registrationId) {
+          lookupId = parsed.registrationId;
+        }
+      } catch (e) {
+        // Ignore JSON parse errors, treat as raw ID
+      }
+    }
+
     setLoading(true);
     setActionMessage(null);
     setParticipant(null);
     try {
-      const res = await apiVolunteerGetParticipant(token, id);
+      const res = await apiVolunteerGetParticipant(token, lookupId);
       if (res.success) {
         setParticipant(res.participant);
       } else {
