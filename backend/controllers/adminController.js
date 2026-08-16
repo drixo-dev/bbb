@@ -198,17 +198,19 @@ const updateStatus = async (req, res) => {
 
     let emailStatus = null;
     if (paymentStatus === 'Approved') {
-
-      emailStatus = await emailService.sendApprovalEmail(updated);
-      
-      if (emailStatus && emailStatus.success) {
-        updated.approvalEmailSent = true;
-        updated.approvalEmailSentAt = new Date();
-        await updated.save();
+      if (updated.email !== 'N/A') {
+        emailStatus = await emailService.sendApprovalEmail(updated);
+        
+        if (emailStatus && emailStatus.success) {
+          updated.approvalEmailSent = true;
+          updated.approvalEmailSentAt = new Date();
+          await updated.save();
+        }
       }
     } else if (paymentStatus === 'Rejected') {
-
-      await emailService.sendRejectionEmail(updated);
+      if (updated.email !== 'N/A') {
+        await emailService.sendRejectionEmail(updated);
+      }
     }
 
     if (paymentStatus === 'Approved' && emailStatus && !emailStatus.success) {
@@ -319,6 +321,10 @@ const resendApprovalEmail = async (req, res) => {
 
     if (participant.paymentStatus !== 'Approved') {
       return res.status(400).json({ success: false, message: 'Participant is not approved.' });
+    }
+
+    if (participant.email === 'N/A') {
+      return res.status(400).json({ success: false, message: 'Participant does not have a valid email.' });
     }
 
     const emailStatus = await emailService.sendApprovalEmail(participant);
