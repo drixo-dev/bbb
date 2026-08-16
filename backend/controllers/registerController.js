@@ -23,6 +23,10 @@ const registerParticipant = async (req, res) => {
       return res.status(400).json({ success: false, message: 'All required fields must be provided.' });
     }
 
+    if (passType === 'Complimentary Pass') {
+      return res.status(400).json({ success: false, message: 'Invalid pass type for standard registration.' });
+    }
+
     const cleanRollNumber = rollNumber.trim().toUpperCase();
 
     const cleanEmail = (email || '').trim().toLowerCase();
@@ -128,6 +132,10 @@ const editRegistration = async (req, res) => {
 
     if (participant.paymentStatus !== 'Not Submitted') {
       return res.status(400).json({ success: false, message: 'Registration cannot be edited after payment is submitted.' });
+    }
+
+    if (passType === 'Complimentary Pass') {
+      return res.status(400).json({ success: false, message: 'Invalid pass type for standard registration.' });
     }
 
     let expectedMembersCount = 0;

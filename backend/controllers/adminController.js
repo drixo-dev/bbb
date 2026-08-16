@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const Participant = require('../models/Participant');
 const Admin = require('../models/Admin');
 const emailService = require('../services/emailService');
@@ -62,22 +63,28 @@ const adminLogin = async (req, res) => {
 
 const getDashboardStats = async (req, res) => {
   try {
-    const totalRegistrations = await Participant.countDocuments({ isDeleted: { $ne: true } });
     const allActive = await Participant.find({ isDeleted: { $ne: true } });
-    const totalPasses = allActive.reduce((sum, p) => sum + (p.passCount || 1), 0);
+    const regularActive = allActive.filter(p => !p.isComplimentary);
+    const compActive = allActive.filter(p => p.isComplimentary);
+
+    const totalRegistrations = regularActive.length;
+    const totalPasses = regularActive.reduce((sum, p) => sum + (p.passCount || 1), 0);
     
-    const pendingList = allActive.filter(p => p.paymentStatus === 'Pending Verification');
+    const pendingList = regularActive.filter(p => p.paymentStatus === 'Pending Verification');
     const pendingPayments = pendingList.reduce((sum, p) => sum + (p.passCount || 1), 0);
     
-    const approvedList = allActive.filter(p => p.paymentStatus === 'Approved');
+    const approvedList = regularActive.filter(p => p.paymentStatus === 'Approved');
     const approvedPayments = approvedList.reduce((sum, p) => sum + (p.passCount || 1), 0);
-    const totalRevenue = approvedList.reduce((sum, p) => sum + (p.amount || 0), 0);
     
-    const rejectedList = allActive.filter(p => p.paymentStatus === 'Rejected');
+    const totalRevenue = allActive.filter(p => p.paymentStatus === 'Approved').reduce((sum, p) => sum + (p.amount || 0), 0);
+    
+    const rejectedList = regularActive.filter(p => p.paymentStatus === 'Rejected');
     const rejectedPayments = rejectedList.reduce((sum, p) => sum + (p.passCount || 1), 0);
     
-    const checkedInList = allActive.filter(p => p.ticketCollected === true);
+    const checkedInList = regularActive.filter(p => p.ticketCollected === true);
     const checkedInCount = checkedInList.reduce((sum, p) => sum + (p.passCount || 1), 0);
+
+    const compPassesCount = compActive.reduce((sum, p) => sum + (p.passCount || 1), 0);
 
     return res.status(200).json({
       success: true,
@@ -88,7 +95,8 @@ const getDashboardStats = async (req, res) => {
         approvedPayments,
         rejectedPayments,
         totalRevenue,
-        checkedInCount
+        checkedInCount,
+        compPassesCount
       }
     });
   } catch (err) {
@@ -380,6 +388,67 @@ const createStaff = async (req, res) => {
   }
 };
 
+const createComplimentaryPass = async (req, res) => {
+  try {
+    const { name, email, phone, school, passCount, complimentaryReason, members, amount } = req.body;
+    
+    if (!name || !passCount) {
+      return res.status(400).json({ success: false, message: 'Name and pass count are required.' });
+    }
+
+    const registrationId = 'BBB26-COMP-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+    const cleanEmail = email ? email.trim().toLowerCase() : 'N/A';
+    const cleanPhone = phone ? phone.trim() : 'N/A';
+    
+    // We don't have a real roll number for complimentary sometimes, so generate a placeholder
+    const rollNumber = 'COMP-' + crypto.randomBytes(4).toString('hex').toUpperCase();
+    
+    const parsedAmount = amount !== undefined && !isNaN(Number(amount)) ? Number(amount) : 0;
+
+    const newParticipant = new Participant({
+      registrationId,
+      name: name.trim(),
+      rollNumber,
+      email: cleanEmail,
+      phone: cleanPhone,
+      school: school ? school.trim() : 'N/A',
+      passType: 'Complimentary Pass',
+      amount: parsedAmount,
+      passCount: parseInt(passCount, 10) || 1,
+      members: Array.isArray(members) ? members : [],
+      paymentStatus: 'Approved',
+      registrationStatus: 'Verified',
+      isComplimentary: true,
+      complimentaryReason: complimentaryReason ? complimentaryReason.trim() : '',
+      approvedBy: req.admin ? req.admin.id : null,
+      approvedAt: new Date()
+    });
+
+    await newParticipant.save();
+
+    let emailSent = false;
+    if (cleanEmail !== 'N/A') {
+      const emailStatus = await emailService.sendApprovalEmail(newParticipant);
+      if (emailStatus && emailStatus.success) {
+        newParticipant.approvalEmailSent = true;
+        newParticipant.approvalEmailSentAt = new Date();
+        await newParticipant.save();
+        emailSent = true;
+      }
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Complimentary pass generated successfully.',
+      data: newParticipant,
+      emailSent
+    });
+  } catch (err) {
+    console.error('Error creating complimentary pass:', err);
+    return res.status(500).json({ success: false, message: 'Error generating complimentary pass.' });
+  }
+};
+
 module.exports = {
   adminLogin,
   getDashboardStats,
@@ -389,5 +458,6 @@ module.exports = {
   deleteParticipant,
   exportCSV,
   resendApprovalEmail,
-  createStaff
+  createStaff,
+  createComplimentaryPass
 };

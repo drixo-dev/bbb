@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard, Users, DollarSign, Clock, CheckCircle, XCircle,
-  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail, UserPlus, FileText, Ticket
+  Search, Filter, Download, Eye, Trash2, Edit3, QrCode, ChevronDown, LogOut, ShieldCheck, Mail, UserPlus, FileText, Ticket, Gift
 } from 'lucide-react';
 import {
   apiAdminLogin, apiAdminGetStats, apiAdminGetParticipants,
   apiAdminUpdateStatus, apiAdminDeleteParticipant, getExportCSVUrl,
   apiAdminVerifyPass, Participant, apiAdminEditParticipant, apiAdminResendEmail, apiAdminCreateStaff,
-  apiVolunteerCollectPass
+  apiVolunteerCollectPass, apiAdminCreateComplimentaryPass
 } from '@/lib/api';
 
 export default function AdminPage() {
@@ -30,6 +30,11 @@ export default function AdminPage() {
   const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
   const [staffSubmitting, setStaffSubmitting] = useState(false);
   const [staffFormData, setStaffFormData] = useState({ name: '', email: '', password: '', role: 'volunteer' });
+
+  // Comp Pass Modal
+  const [isCompModalOpen, setIsCompModalOpen] = useState(false);
+  const [compSubmitting, setCompSubmitting] = useState(false);
+  const [compFormData, setCompFormData] = useState({ name: '', phone: '', passCount: '' as string | number, amount: '' as string | number, complimentaryReason: '' });
 
   // Dashboard data
   const [stats, setStats] = useState<Record<string, number>>({});
@@ -212,6 +217,26 @@ export default function AdminPage() {
     }
   };
 
+  const handleCreateCompPass = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCompSubmitting(true);
+    try {
+      const res = await apiAdminCreateComplimentaryPass(token, compFormData);
+      if (res.success) {
+        alert('Complimentary pass created successfully!');
+        setIsCompModalOpen(false);
+        setCompFormData({ name: '', phone: '', passCount: '', amount: '', complimentaryReason: '' });
+        fetchData();
+      } else {
+        alert(res.message || 'Failed to create complimentary pass.');
+      }
+    } catch (err) {
+      alert('Error connecting to server.');
+    } finally {
+      setCompSubmitting(false);
+    }
+  };
+
   // ============ LOGIN SCREEN ============
   if (!isAuthenticated) {
     return (
@@ -277,6 +302,7 @@ export default function AdminPage() {
     { label: 'Approved Passes', value: stats.approvedPayments || 0, icon: CheckCircle, color: 'text-emerald-400' },
     { label: 'Rejected Passes', value: stats.rejectedPayments || 0, icon: XCircle, color: 'text-red-400' },
     { label: 'Passes Collected', value: stats.checkedInCount || 0, icon: QrCode, color: 'text-purple-400' },
+    { label: 'Comp. Passes', value: stats.compPassesCount || 0, icon: Gift, color: 'text-pink-400' },
   ];
 
   return (
@@ -293,12 +319,20 @@ export default function AdminPage() {
         <div className="flex items-center gap-3">
           <div className="flex gap-4 items-center flex-wrap">
             {(userRole === 'super_admin' || userRole === 'admin') && (
-              <button
-                onClick={() => setIsStaffModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-900/40 text-blue-300 font-poppins text-sm font-semibold border border-blue-500/30 hover:bg-blue-900/60 transition-colors"
-              >
-                <UserPlus className="w-4 h-4" /> Add Staff
-              </button>
+              <>
+                <button
+                  onClick={() => setIsCompModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900/40 text-purple-300 font-poppins text-sm font-semibold border border-purple-500/30 hover:bg-purple-900/60 transition-colors"
+                >
+                  <Gift className="w-4 h-4" /> Comp Pass
+                </button>
+                <button
+                  onClick={() => setIsStaffModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-900/40 text-blue-300 font-poppins text-sm font-semibold border border-blue-500/30 hover:bg-blue-900/60 transition-colors"
+                >
+                  <UserPlus className="w-4 h-4" /> Add Staff
+                </button>
+              </>
             )}
             {userRole === 'super_admin' && (
               <a
@@ -382,6 +416,7 @@ export default function AdminPage() {
                 <option value="Single Pass">Single</option>
                 <option value="Couple Pass">Couple</option>
                 <option value="Group Pass (4 People)">Group</option>
+                <option value="Complimentary Pass">Complimentary</option>
               </select>
               <select
                 value={filterStatus}
@@ -780,6 +815,99 @@ export default function AdminPage() {
                   className="px-6 py-2 rounded-lg bg-gold-antique text-maroon-900 font-marcellus font-bold text-sm hover:shadow-gold-glow transition-all disabled:opacity-50"
                 >
                   {staffSubmitting ? 'Creating...' : 'Create Account'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {isCompModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-maroon-950 border border-purple-500/30 rounded-2xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setIsCompModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
+            <h3 className="font-cinzel text-xl text-purple-300 mb-6 flex items-center gap-2">
+              <Gift className="w-5 h-5" /> Generate Complimentary Pass
+            </h3>
+            
+            <form onSubmit={handleCreateCompPass} className="space-y-4">
+              <div>
+                <label className="block text-purple-300 text-xs uppercase tracking-wider mb-2 font-semibold">Recipient Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={compFormData.name}
+                  onChange={(e) => setCompFormData({...compFormData, name: e.target.value})}
+                  className="w-full bg-black/40 border border-purple-900/40 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-purple-500"
+                  placeholder="Name of the person"
+                />
+              </div>
+
+              <div>
+                <label className="block text-purple-300 text-xs uppercase tracking-wider mb-2 font-semibold">Phone Number</label>
+                <input
+                  type="text"
+                  value={compFormData.phone}
+                  onChange={(e) => setCompFormData({...compFormData, phone: e.target.value})}
+                  className="w-full bg-black/40 border border-purple-900/40 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-purple-500"
+                  placeholder="Primary contact (Optional)"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-purple-300 text-xs uppercase tracking-wider mb-2 font-semibold">No. of Passes *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={compFormData.passCount}
+                    onChange={(e) => setCompFormData({...compFormData, passCount: e.target.value})}
+                    className="w-full bg-black/40 border border-purple-900/40 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-purple-500 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-purple-300 text-xs uppercase tracking-wider mb-2 font-semibold">Amount (₹)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={compFormData.amount}
+                    onChange={(e) => setCompFormData({...compFormData, amount: e.target.value})}
+                    className="w-full bg-black/40 border border-purple-900/40 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-purple-500"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-purple-300 text-xs uppercase tracking-wider mb-2 font-semibold">Reason / Reference</label>
+                <input
+                  type="text"
+                  value={compFormData.complimentaryReason}
+                  onChange={(e) => setCompFormData({...compFormData, complimentaryReason: e.target.value})}
+                  className="w-full bg-black/40 border border-purple-900/40 rounded-lg px-4 py-2.5 text-white font-poppins text-sm focus:outline-none focus:border-purple-500"
+                  placeholder="e.g. VIP Guest, Sponsor, Band Member"
+                />
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsCompModalOpen(false)}
+                  className="px-4 py-2 rounded-lg font-poppins text-sm font-semibold text-gray-400 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={compSubmitting}
+                  className="px-6 py-2 rounded-lg bg-purple-600/80 text-white font-marcellus font-bold text-sm hover:bg-purple-500 transition-all disabled:opacity-50 border border-purple-400/50"
+                >
+                  {compSubmitting ? 'Generating...' : 'Generate Pass'}
                 </button>
               </div>
             </form>

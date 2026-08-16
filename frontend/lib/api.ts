@@ -169,6 +169,18 @@ export const apiAdminCreateStaff = async (token: string, data: any) => {
   return res.json();
 };
 
+export const apiAdminCreateComplimentaryPass = async (token: string, data: any) => {
+  const res = await fetch(`${API_BASE_URL}/admin/complimentary-pass`, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` 
+    },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+};
+
 export function getExportCSVUrl(token: string) {
   return `${API_BASE_URL}/admin/export-csv?token=${token}`;
 }
