@@ -186,9 +186,9 @@ export default function RegistrationForm() {
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
-              { label: 'Single Pass', value: 'Single Pass', price: '₹1200' },
-              { label: 'Couple Pass', value: 'Couple Pass', price: '₹2200' },
-              { label: 'Group Pass (4 People)', value: 'Group Pass (4 People)', price: '₹4200' }
+              { label: 'Single Pass', value: 'Single Pass', price: '₹1300' },
+              { label: 'Couple Pass', value: 'Couple Pass', price: '₹2500' },
+              { label: 'Group Pass (4 People)', value: 'Group Pass (4 People)', price: '₹4400' }
             ].map((p) => (
               <button
                 key={p.value}

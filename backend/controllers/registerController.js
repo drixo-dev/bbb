@@ -2,9 +2,9 @@ const Participant = require('../models/Participant');
 const crypto = require('crypto');
 
 const PASS_PRICES = {
-  'Single Pass': 1200,
-  'Couple Pass': 2200,
-  'Group Pass (4 People)': 4200
+  'Single Pass': 1300,
+  'Couple Pass': 2500,
+  'Group Pass (4 People)': 4400
 };
 
 const getNextAction = (status) => {
@@ -60,7 +60,7 @@ const registerParticipant = async (req, res) => {
       });
     }
 
-    const price = PASS_PRICES[passType] || 1200;
+    const price = PASS_PRICES[passType] || 1300;
     const registrationId = 'BBB26-' + crypto.randomBytes(4).toString('hex').toUpperCase();
 
     const newParticipant = new Participant({
@@ -158,7 +158,7 @@ const editRegistration = async (req, res) => {
     }
 
     const activeMembers = memberList.slice(0, expectedMembersCount);
-    const price = PASS_PRICES[passType] || 1200;
+    const price = PASS_PRICES[passType] || 1300;
 
     const newRollNumber = req.body.rollNumber ? req.body.rollNumber.trim().toUpperCase() : participant.rollNumber;
     const newEmail = email ? email.trim().toLowerCase() : participant.email;

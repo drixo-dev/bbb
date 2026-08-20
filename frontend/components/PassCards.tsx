@@ -12,8 +12,8 @@ export default function PassCards() {
       id: 'Single',
       name: 'Single Pass',
       tagline: 'Individual Royal Entry',
-      price: 1200,
-      originalPrice: 1300,
+      price: 1300,
+      originalPrice: 1500,
       popular: false,
       locked: false,
       benefits: [
@@ -28,8 +28,8 @@ export default function PassCards() {
       id: 'Couple',
       name: 'Couple Pass',
       tagline: 'Entry for 2 Baaratis',
-      price: 2200,
-      originalPrice: 2400,
+      price: 2500,
+      originalPrice: 2800,
       popular: true,
       locked: false,
       benefits: [
@@ -45,8 +45,8 @@ export default function PassCards() {
       id: 'Group',
       name: 'Group Pass (4 People)',
       tagline: 'Squad Entry for 4 Friends',
-      price: 4200,
-      originalPrice: 4800,
+      price: 4400,
+      originalPrice: 5000,
       popular: false,
       locked: false,
       benefits: [
