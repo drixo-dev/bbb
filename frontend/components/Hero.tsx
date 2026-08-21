@@ -104,13 +104,13 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap">
-            <Link
-              href="/register"
+            <button
+              onClick={() => setIsClosedModalOpen(true)}
               className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 font-marcellus font-bold text-base tracking-widest uppercase shadow-gold-intense hover:scale-105 transition-all duration-300 border-2 border-gold-champagne flex items-center justify-center gap-3 group"
             >
               <span>Book Royal Pass Now</span>
               <span className="group-hover:translate-x-1 transition-transform">👑</span>
-            </Link>
+            </button>
 
             <button
               onClick={(e) => {

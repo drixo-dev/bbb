@@ -76,12 +76,12 @@ export default function Navbar() {
           </button>
 
           {/* CTA Register Button */}
-          <Link
-            href="/register"
+          <button
+            onClick={() => setIsClosedModalOpen(true)}
             className="px-6 py-2.5 rounded-full bg-gradient-to-r from-gold-antique via-gold-champagne to-gold-antique text-maroon-900 font-marcellus font-bold text-sm tracking-wider shadow-gold-glow hover:scale-105 hover:shadow-gold-intense transition-all duration-300 border border-gold-champagne"
           >
             Register Now 👑
-          </Link>
+          </button>
         </div>
 
         {/* Mobile Hamburger Toggle */}
@@ -117,13 +117,15 @@ export default function Navbar() {
             Find My Registration
           </button>
 
-          <Link
-            href="/register"
-            onClick={() => setMobileMenuOpen(false)}
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setIsClosedModalOpen(true);
+            }}
             className="block text-center w-full py-3 rounded-full bg-gradient-to-r from-gold-antique to-gold-champagne text-maroon-900 font-marcellus font-bold tracking-wider shadow-gold-glow"
           >
             Register Now 👑
-          </Link>
+          </button>
         </div>
       )}
       </nav>

@@ -39,16 +39,16 @@ export default function RegistrationClosedModal({ isOpen, onClose }: Registratio
                 </div>
                 
                 <h3 className="font-cinzel text-2xl font-bold text-gold-gradient">
-                  Registrations Paused
+                  Registrations Closed
                 </h3>
                 
                 <div className="p-4 rounded-xl bg-maroon-950/50 border border-gold-antique/20 space-y-3">
                   <p className="font-poppins text-sm text-royal-ivory leading-relaxed">
-                    Phase 1 registrations are now <strong className="text-red-400">closed</strong>.
+                    Registrations for Band Baaja Baarat 2026 are now officially <strong className="text-red-400">closed</strong>.
                   </p>
                   <hr className="border-gold-antique/20" />
-                  <p className="font-poppins text-sm text-emerald-400 font-medium">
-                    Please stay tuned for Phase 2!
+                  <p className="font-poppins text-sm text-gold-champagne font-medium italic">
+                    The wait is over. See you at the Baarat! 👑
                   </p>
                 </div>
                 
